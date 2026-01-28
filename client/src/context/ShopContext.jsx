@@ -382,7 +382,9 @@ export const ShopProvider = ({ children }) => {
             const { data } = await axios.get(`${API_BASE_URL}/orders/myorders`, {
                 headers: { Authorization: `Bearer ${tokenValue}` }
             });
-            setUserOrders(data);
+            if (Array.isArray(data)) {
+                setUserOrders(data);
+            }
         } catch (error) {
             console.error('Failed to fetch orders:', error);
         }
@@ -394,8 +396,10 @@ export const ShopProvider = ({ children }) => {
             try {
                 setIsLoading(true);
                 const { data } = await axios.get(`${API_BASE_URL}/products`);
-                if (data && data.length > 0) {
+                if (Array.isArray(data)) {
                     setProducts(data);
+                } else {
+                    console.error('API Error: Products data is not an array', data);
                 }
             } catch (error) {
                 console.error('Failed to fetch products:', error);
@@ -414,7 +418,9 @@ export const ShopProvider = ({ children }) => {
                 try {
                     const config = { headers: { Authorization: `Bearer ${adminToken}` } };
                     const { data: orderData } = await axios.get(`${API_BASE_URL}/inquiries`, config);
-                    setOrders(orderData);
+                    if (Array.isArray(orderData)) {
+                        setOrders(orderData);
+                    }
                 } catch (error) {
                     console.error('Failed to fetch admin data:', error);
                 }
@@ -520,6 +526,28 @@ export const ShopProvider = ({ children }) => {
     const logoutUser = () => {
         setUserToken(null);
         setUser(null);
+    };
+
+    const uploadProductImages = async (files) => {
+        try {
+            const formData = new FormData();
+            files.forEach(file => {
+                formData.append('images', file);
+            });
+
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${adminToken}`
+                }
+            };
+
+            const { data } = await axios.post(`${API_BASE_URL}/upload`, formData, config);
+            return data; // Returns array of Cloudinary URLs
+        } catch (error) {
+            console.error('Image upload failed:', error);
+            return null;
+        }
     };
 
     const addProduct = async (productData) => {

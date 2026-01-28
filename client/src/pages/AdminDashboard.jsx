@@ -32,10 +32,11 @@ const AdminDashboard = () => {
     addProduct, 
     deleteProduct, 
     updateProduct,
-    dealPoster,
-    updateDealPoster,
+    uploadProductImages,
     isLoading
   } = useShop();
+  
+  const [isUploading, setIsUploading] = useState(false);
   
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -57,7 +58,8 @@ const AdminDashboard = () => {
     colors: [],
     isFeatured: false,
     isHotDeal: false,
-    isNewArrival: false
+    isNewArrival: false,
+    selectedFiles: [] // Temporary storage for files to upload
   });
 
   useEffect(() => {
@@ -73,17 +75,41 @@ const AdminDashboard = () => {
 
   const handleProductSubmit = async (e) => {
     e.preventDefault();
-    const success = editingProduct 
-      ? await updateProduct({ ...productForm, _id: editingProduct._id || editingProduct.id })
-      : await addProduct(productForm);
+    setIsUploading(true);
+    
+    try {
+      let finalProductForm = { ...productForm };
 
-    if (success) {
-      alert(editingProduct ? 'Product updated!' : 'Product added!');
-      setEditingProduct(null);
-      resetForm();
-      setActiveTab('products');
-    } else {
-      alert('Operation failed. Please check your connection or permissions.');
+      // Upload images if there are new files selected
+      if (productForm.selectedFiles && productForm.selectedFiles.length > 0) {
+        const imageUrls = await uploadProductImages(productForm.selectedFiles);
+        if (imageUrls && imageUrls.length > 0) {
+          finalProductForm.image = imageUrls[0];
+          finalProductForm.images = imageUrls;
+        } else {
+          alert('Image upload failed. Product not saved.');
+          setIsUploading(false);
+          return;
+        }
+      }
+
+      const success = editingProduct 
+        ? await updateProduct({ ...finalProductForm, _id: editingProduct._id || editingProduct.id })
+        : await addProduct(finalProductForm);
+
+      if (success) {
+        alert(editingProduct ? 'Product updated!' : 'Product added!');
+        setEditingProduct(null);
+        resetForm();
+        setActiveTab('products');
+      } else {
+        alert('Operation failed. Please check your connection or permissions.');
+      }
+    } catch (error) {
+      console.error('Submit Error:', error);
+      alert('An error occurred during submission.');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -360,9 +386,49 @@ const AdminDashboard = () => {
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                         <label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Product Visual (URL)</label>
-                        <input type="url" placeholder="https://image-source.com/product.png" className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/5 focus:bg-white transition-all" value={productForm.image} onChange={e => setProductForm({...productForm, image: e.target.value})} required />
+                    <div className="space-y-4">
+                         <div className="flex justify-between items-center">
+                            <label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1">Product Visuals (Up to 3 Images)</label>
+                            {productForm.selectedFiles?.length > 0 && <button type="button" onClick={() => setProductForm({...productForm, selectedFiles: []})} className="text-[10px] font-bold text-red-500 hover:underline">Clear Selection</button>}
+                         </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div className="md:col-span-1">
+                                <label className="flex flex-col items-center justify-center w-full h-40 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:border-primary/50 hover:bg-slate-100/50 transition-all group">
+                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <PlusCircle className="w-8 h-8 text-slate-300 group-hover:text-primary transition-colors mb-2" />
+                                        <p className="text-[10px] font-black text-slate-400 uppercase">Upload Images</p>
+                                    </div>
+                                    <input 
+                                        type="file" 
+                                        className="hidden" 
+                                        multiple 
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                            const files = Array.from(e.target.files).slice(0, 3);
+                                            setProductForm({...productForm, selectedFiles: files});
+                                        }} 
+                                    />
+                                </label>
+                            </div>
+
+                            {/* Previews */}
+                            {productForm.selectedFiles?.length > 0 ? (
+                                productForm.selectedFiles.map((file, i) => (
+                                    <div key={i} className="relative h-40 rounded-2xl border border-slate-100 overflow-hidden bg-white">
+                                        <img src={URL.createObjectURL(file)} className="w-full h-full object-contain p-2" alt="preview" />
+                                        <div className="absolute top-2 left-2 bg-slate-900/80 text-white text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase">Image {i+1}</div>
+                                    </div>
+                                ))
+                            ) : (
+                                productForm.images?.slice(0, 3).map((img, i) => (
+                                    <div key={i} className="relative h-40 rounded-2xl border border-slate-100 overflow-hidden bg-white">
+                                        <img src={img} className="w-full h-full object-contain p-2" alt="current" />
+                                        <div className="absolute top-2 left-2 bg-primary/80 text-white text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase">Current {i+1}</div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
                     </div>
 
                     <div className="space-y-2">
@@ -382,8 +448,19 @@ const AdminDashboard = () => {
                                 </label>
                             ))}
                         </div>
-                        <button type="submit" className="px-10 py-5 bg-slate-900 text-white font-black rounded-2xl hover:bg-primary transition-all shadow-xl shadow-slate-900/10 active:scale-95">
-                            {editingProduct ? 'Update Product Architecture' : 'Deploy New Product'}
+                         <button 
+                            type="submit" 
+                            disabled={isUploading}
+                            className={`px-10 py-5 font-black rounded-2xl transition-all shadow-xl active:scale-95 flex items-center gap-3 ${isUploading ? 'bg-slate-400 cursor-not-allowed' : 'bg-slate-900 text-white hover:bg-primary shadow-slate-900/10'}`}
+                         >
+                            {isUploading ? (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    Uploading...
+                                </>
+                            ) : (
+                                editingProduct ? 'Update Product Architecture' : 'Deploy New Product'
+                            )}
                         </button>
                     </div>
                  </form>
