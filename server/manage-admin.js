@@ -46,7 +46,7 @@ const run = async () => {
             console.log('Error: Missing arguments. Use: create [name] [email] [password]');
             break;
         }
-        const userExists = await User.findOne({ email: arg1 });
+        const userExists = await User.findOne({ email: arg2 });
         if (userExists) {
             console.log('Error: A user with this email already exists.');
             break;
