@@ -1,0 +1,38 @@
+SYNERGY MOBILES - ADMIN MANAGEMENT COMMANDS
+==========================================
+
+This file contains the commands you need to manage your store's administrative users.
+To run these, open your terminal in the "server" folder.
+
+1. CREATE A NEW OWNER
+---------------------
+Syntax: node manage-admin.js create "Full Name" "email@example.com" "password"
+Example: node manage-admin.js create "Synergy Owner" "owner@synergy.com" "SecurePass123"
+
+
+2. CHANGE ADMIN PASSWORD
+------------------------
+Syntax: node manage-admin.js update-pass "current_email" "new_password"
+Example: node manage-admin.js update-pass "owner@synergy.com" "BrandNewSecret789"
+
+
+3. CHANGE ADMIN EMAIL
+---------------------
+Syntax: node manage-admin.js update-email "old_email" "new_email"
+Example: node manage-admin.js update-email "owner@synergy.com" "admin@synergy.com"
+
+
+4. LIST ALL CURRENT ADMINS
+--------------------------
+Command: node manage-admin.js list
+
+
+5. REMOVE AN ADMIN
+------------------
+Syntax: node manage-admin.js delete "email_to_remove"
+Example: node manage-admin.js delete "staff@example.com"
+
+
+------------------------------------------
+NOTE: Your database must be running for these commands to work.
+------------------------------------------

@@ -1,0 +1,10 @@
+# Directories to ignore at root
+node_modules/
+dist/
+build/
+
+# Files to ignore
+.env
+.env.local
+.DS_Store
+*.log
