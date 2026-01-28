@@ -23,15 +23,26 @@ const AdminLoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('--- Login Attempt Initiated ---');
+    console.log('Email:', email);
     setIsSubmitting(true);
     
-    const success = await loginAdmin(email, password);
-    if (success) {
-        navigate('/admin');
-    } else {
-        alert('Access Denied. Invalid administrative credentials.');
+    try {
+        const success = await loginAdmin(email, password);
+        console.log('Login Success Status:', success);
+        if (success) {
+            console.log('Redirecting to Admin Dashboard...');
+            navigate('/admin');
+        } else {
+            console.warn('Login failed: Invalid administrative credentials.');
+            alert('Access Denied. Invalid administrative credentials.');
+        }
+    } catch (err) {
+        console.error('Login submission error:', err);
+    } finally {
+        setIsSubmitting(false);
+        console.log('--- Login Attempt Finished ---');
     }
-    setIsSubmitting(false);
   };
 
   return (

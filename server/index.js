@@ -5,8 +5,6 @@ const path = require('path');
 const connectDB = require('./config/db');
 
 const helmet = require('helmet');
-const mongoSanitize = require('express-mongo-sanitize');
-const xss = require('xss-clean');
 const rateLimit = require('express-rate-limit');
 
 dotenv.config();
@@ -15,11 +13,13 @@ connectDB();
 
 const app = express();
 
-// Security Middleware
-app.use(helmet());
-app.use(mongoSanitize());
-app.use(xss());
 
+// Middlewares
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
+
+// Main limited API routes
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // limit each IP to 100 requests per windowMs
@@ -27,9 +27,6 @@ const limiter = rateLimit({
 });
 
 app.use('/api', limiter);
-
-app.use(cors());
-app.use(express.json());
 
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');

@@ -10,6 +10,9 @@ const API_BASE_URL = import.meta.env.VITE_API_URL ||
         ? 'http://localhost:5000/api' 
         : '/api');
 
+console.log('ShopContext: API_BASE_URL is set to:', API_BASE_URL);
+console.log('ShopContext: Current Hostname:', window.location.hostname);
+
 export const ShopProvider = ({ children }) => {
     const [products, setProducts] = useState([
         {
@@ -464,15 +467,25 @@ export const ShopProvider = ({ children }) => {
 
     // Admin Auth Actions
     const loginAdmin = async (email, password) => {
+        console.log('API Request: POST', `${API_BASE_URL}/users/login`);
         try {
             const { data } = await axios.post(`${API_BASE_URL}/users/login`, { email, password });
+            console.log('API Response Data:', data);
+            
             if (data.isAdmin) {
+                console.log('Admin verification successful.');
                 setAdminToken(data.token);
                 return true;
+            } else {
+                console.warn('Login successful but user is not an admin.');
+                return false;
             }
-            return false;
         } catch (error) {
-            console.error('Admin login failed:', error);
+            console.error('API Login Error:', error.response?.data?.message || error.message);
+            if (error.response) {
+                console.error('Error Status:', error.response.status);
+                console.error('Error Data:', error.response.data);
+            }
             return false;
         }
     };
