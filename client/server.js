@@ -1,7 +1,10 @@
-// This file acts as a bridge to run the server from the client directory
-// This is necessary because Hostinger is locked to the 'client' directory as root
+import { createRequire } from 'module';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const path = require('path');
+const require = createRequire(import.meta.url);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Change working directory to the server folder
 // This ensures that relative paths (like config/db) work correctly
