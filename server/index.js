@@ -7,7 +7,7 @@ const connectDB = require('./config/db');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 connectDB();
 
