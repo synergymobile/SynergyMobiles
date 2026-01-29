@@ -28,6 +28,8 @@ const limiter = rateLimit({
 
 app.use('/api', limiter);
 
+const apiRouter = express.Router();
+
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
 const pageRoutes = require('./routes/pageRoutes');
@@ -35,15 +37,34 @@ const inquiryRoutes = require('./routes/inquiryRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 
-app.use('/api/products', productRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/pages', pageRoutes);
-app.use('/api/inquiries', inquiryRoutes);
-app.use('/api/upload', uploadRoutes);
-app.use('/api/orders', orderRoutes);
+apiRouter.use('/products', productRoutes);
+apiRouter.use('/users', userRoutes);
+apiRouter.use('/pages', pageRoutes);
+apiRouter.use('/inquiries', inquiryRoutes);
+apiRouter.use('/upload', uploadRoutes);
+apiRouter.use('/orders', orderRoutes);
+
+// Mount the API router
+app.use('/api', apiRouter);
+// Also mount at root as a fallback for certain hosting environments
+app.use('/', apiRouter);
 
 // Make uploads folder static
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+
+// Serve static frontend in production
+const distPath = path.join(__dirname, '../client/dist');
+app.use(express.static(distPath));
+
+// Wildcard route to serve index.html for SPA
+app.get('*', (req, res) => {
+    // If request is not for /api, serve the frontend
+    if (!req.path.startsWith('/api')) {
+        res.sendFile(path.join(distPath, 'index.html'));
+    } else {
+        res.status(404).json({ message: 'API Route Not Found' });
+    }
+});
 
 const PORT = process.env.PORT || 5000;
 
