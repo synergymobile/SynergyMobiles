@@ -1,6 +1,6 @@
 # Directories to ignore at root
 node_modules/
-dist/
+# dist/
 build/
 
 # Files to ignore

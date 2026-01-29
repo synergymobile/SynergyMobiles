@@ -1,0 +1,10 @@
+{
+  "name": "synergy-mobiles-root",
+  "version": "1.0.0",
+  "description": "Root deployment configuration for Hostinger",
+  "scripts": {
+    "build": "cd server && npm install",
+    "start": "cd server && node index.js"
+  },
+  "dependencies": {}
+}
