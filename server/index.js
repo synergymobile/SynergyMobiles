@@ -90,6 +90,17 @@ app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 const distPath = path.join(__dirname, '../client/dist');
 app.use(express.static(distPath));
 
+// Route to view debug logs in browser
+app.get('/debug-logs', (req, res) => {
+    const logPath = path.join(__dirname, 'debug.log');
+    if (fs.existsSync(logPath)) {
+        res.setHeader('Content-Type', 'text/plain');
+        res.sendFile(logPath);
+    } else {
+        res.status(404).send('No log file found');
+    }
+});
+
 // Wildcard route to serve index.html for SPA
 app.get(/.*/, (req, res) => {
     // If request is not for /api, serve the frontend
