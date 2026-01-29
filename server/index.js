@@ -7,15 +7,30 @@ const connectDB = require('./config/db');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
+const fs = require('fs');
+
+// Create/Append to a debug log file
+const logFile = path.join(__dirname, 'debug.log');
+const log = (message) => {
+    const timestamp = new Date().toISOString();
+    const logMessage = `[${timestamp}] ${message}\n`;
+    console.log(message);
+    try {
+        fs.appendFileSync(logFile, logMessage);
+    } catch (err) {
+        console.error('Failed to write to log file:', err);
+    }
+};
+
 dotenv.config({ path: path.join(__dirname, '.env') });
 
-console.log('--- Server Startup Diagnostics ---');
-console.log('Current Working Directory:', process.cwd());
-console.log('Server Directory (__dirname):', __dirname);
-console.log('Environment File Path:', path.join(__dirname, '.env'));
-console.log('MONGO_URI loaded:', process.env.MONGO_URI ? 'Yes' : 'No');
-console.log('PORT:', process.env.PORT);
-console.log('----------------------------------');
+log('--- Server Startup Diagnostics ---');
+log(`Current Working Directory: ${process.cwd()}`);
+log(`Server Directory (__dirname): ${__dirname}`);
+log(`Environment File Path: ${path.join(__dirname, '.env')}`);
+log(`MONGO_URI loaded: ${process.env.MONGO_URI ? 'Yes' : 'No'}`);
+log(`PORT: ${process.env.PORT}`);
+log('----------------------------------');
 
 connectDB();
 
@@ -89,7 +104,7 @@ app.get(/.*/, (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    log(`Server running on port ${PORT}`);
 });
 
 // Handle unhandled promise rejections
