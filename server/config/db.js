@@ -6,7 +6,7 @@ const connectDB = async () => {
         console.log('MongoDB connected successfully');
     } catch (error) {
         console.error(`Error: ${error.message}`);
-        // Removed process.exit(1) to prevent the server from crashing on Hostinger
+        // process.exit(1); // Do not exit process, just log error so server can stay alive for diagnostics
     }
 };
 

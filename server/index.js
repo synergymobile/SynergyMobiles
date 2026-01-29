@@ -9,6 +9,14 @@ const rateLimit = require('express-rate-limit');
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 
+console.log('--- Server Startup Diagnostics ---');
+console.log('Current Working Directory:', process.cwd());
+console.log('Server Directory (__dirname):', __dirname);
+console.log('Environment File Path:', path.join(__dirname, '.env'));
+console.log('MONGO_URI loaded:', process.env.MONGO_URI ? 'Yes' : 'No');
+console.log('PORT:', process.env.PORT);
+console.log('----------------------------------');
+
 connectDB();
 
 const app = express();
