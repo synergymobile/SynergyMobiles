@@ -53,7 +53,8 @@ app.use('/', apiRouter);
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 // Serve static frontend in production
-const distPath = path.join(__dirname, '../client/dist');
+// Since frontend files are in public_html and server is in public_html/server
+const distPath = path.join(__dirname, '..');
 app.use(express.static(distPath));
 
 // Wildcard route to serve index.html for SPA
