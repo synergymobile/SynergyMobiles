@@ -87,7 +87,6 @@ app.use('/', apiRouter);
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 // Serve static frontend in production
-// Since frontend files are in public_html and server is in public_html/server
 const distPath = path.join(__dirname, '../client/dist');
 app.use(express.static(distPath));
 
@@ -95,7 +94,14 @@ app.use(express.static(distPath));
 app.get(/.*/, (req, res) => {
     // If request is not for /api, serve the frontend
     if (!req.path.startsWith('/api')) {
-        res.sendFile(path.join(distPath, 'index.html'));
+        const indexPath = path.join(distPath, 'index.html');
+        if (fs.existsSync(indexPath)) {
+            res.sendFile(indexPath);
+        } else {
+            const msg = 'Frontend build not found. Please build the client and ensure dist/index.html exists.';
+            log(msg);
+            res.status(404).send(msg);
+        }
     } else {
         res.status(404).json({ message: 'API Route Not Found' });
     }
