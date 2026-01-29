@@ -19,6 +19,17 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK', uptime: process.uptime() });
+});
+
+// Log all requests for debugging
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path}`);
+    next();
+});
+
 // Main limited API routes
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -71,4 +82,14 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err, promise) => {
+    console.error(`Error: ${err.message}`);
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+    console.error(`Uncaught Exception: ${err.message}`);
 });
