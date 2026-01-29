@@ -87,7 +87,9 @@ app.use('/', apiRouter);
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 // Serve static frontend in production
-const distPath = path.join(__dirname, '../client/dist');
+// const distPath = path.join(__dirname, '../client/dist');
+// Changed to local dist folder to avoid path traversal issues in production
+const distPath = path.join(__dirname, 'dist');
 app.use(express.static(distPath));
 
 // Route to view debug logs in browser
