@@ -2,7 +2,7 @@
 node_modules/
 
 # Production
-dist/
+# dist/  <-- Commented out to allow committing build artifacts for Hostinger
 build/
 
 # Environment Variables
