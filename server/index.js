@@ -57,7 +57,7 @@ const distPath = path.join(__dirname, '../client/dist');
 app.use(express.static(distPath));
 
 // Wildcard route to serve index.html for SPA
-app.get('*', (req, res) => {
+app.get(/.*/, (req, res) => {
     // If request is not for /api, serve the frontend
     if (!req.path.startsWith('/api')) {
         res.sendFile(path.join(distPath, 'index.html'));
