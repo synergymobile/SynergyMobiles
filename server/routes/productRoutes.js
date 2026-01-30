@@ -36,23 +36,60 @@ router.get('/:id', async (req, res) => {
 
 // Create product
 router.post('/', protect, admin, async (req, res) => {
-    const { name, price, description, image, brand, category, countInStock } = req.body;
     try {
+        const { 
+            name, 
+            slug,
+            price, 
+            originalPrice,
+            description, 
+            image,
+            images, 
+            brand, 
+            category, 
+            stock,
+            isFeatured,
+            isHotDeal,
+            isNewArrival,
+            features,
+            specifications
+        } = req.body;
+
+        // Validate required fields
+        if (!name || !price || !description || !brand || !category) {
+            return res.status(400).json({ 
+                message: 'Please provide all required fields: name, price, description, brand, category' 
+            });
+        }
+
+        // Validate images
+        if (!image && (!images || images.length === 0)) {
+            return res.status(400).json({ 
+                message: 'Please provide at least one product image' 
+            });
+        }
+
         const product = new Product({
-            name: 'Sample name',
-            slug: 'sample-name-' + Date.now(),
-            price: 0,
-            user: req.user._id,
-            image: '/images/sample.jpg',
-            brand: 'Sample brand',
-            category: 'Sample category',
-            countInStock: 0,
-            numReviews: 0,
-            description: 'Sample description',
+            name,
+            slug: slug || name.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-'),
+            price: parseFloat(price),
+            discountPrice: originalPrice ? parseFloat(originalPrice) : undefined,
+            description,
+            image: image || images[0],
+            images: images || [image],
+            brand,
+            category,
+            stock: parseInt(stock) || 0,
+            features: features || [],
+            specifications: specifications || {},
+            isFeatured: isFeatured || false,
+            isBestSeller: isHotDeal || isNewArrival || false,
         });
+
         const createdProduct = await product.save();
         res.status(201).json(createdProduct);
     } catch (error) {
+        console.error('Product Creation Error:', error);
         res.status(500).json({ message: error.message });
     }
 });

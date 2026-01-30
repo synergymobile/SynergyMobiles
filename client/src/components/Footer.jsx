@@ -16,7 +16,7 @@ const Footer = () => {
               <div className="flex gap-3 sm:gap-4 flex-wrap">
                 {[
                   { icon: "facebook-f", link: "#", color: "hover:bg-blue-600" },
-                  { icon: "twitter", link: "#", color: "hover:bg-sky-500" },
+                  
                   { icon: "instagram", link: "#", color: "hover:bg-pink-600" },
                   { icon: "youtube", link: "#", color: "hover:bg-red-600" },
                   { icon: "whatsapp", link: "#", color: "hover:bg-emerald-500" }

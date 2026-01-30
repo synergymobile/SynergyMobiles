@@ -659,6 +659,7 @@ export const ShopProvider = ({ children }) => {
             addProduct,
             updateProduct,
             deleteProduct,
+            uploadProductImages,
             updateDealPoster
         }}>
             {children}

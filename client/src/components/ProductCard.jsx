@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
-import { Heart, Eye, ShoppingCart, Star } from 'lucide-react';
+import { ShoppingCart, Star } from 'lucide-react';
 
 const ProductCard = ({ product }) => {
-  const { addToCart, openProductModal } = useShop();
+  const { addToCart } = useShop();
   const [isHovered, setIsHovered] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(true);
 
@@ -14,11 +14,7 @@ const ProductCard = ({ product }) => {
     addToCart(product.id);
   };
 
-  const handleQuickView = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    openProductModal(product);
-  };
+  /* Quick view handler removed */
 
   // Calculate discount percentage
   const discount = product.originalPrice > product.price 
@@ -45,25 +41,11 @@ const ProductCard = ({ product }) => {
         )}
       </div>
 
-      {/* Action Buttons (Right Side) */}
-      <div className={`absolute top-4 right-4 z-10 flex flex-col gap-2 transition-all duration-500 ${isHovered ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'}`}>
-        <button 
-          className="w-10 h-10 bg-white/80 backdrop-blur-md text-slate-400 rounded-full flex items-center justify-center shadow-lg hover:bg-secondary hover:text-white transition-all duration-300"
-          title="Add to Wishlist"
-        >
-          <Heart className="w-5 h-5" />
-        </button>
-        <button 
-          onClick={handleQuickView}
-          className="w-10 h-10 bg-white/80 backdrop-blur-md text-slate-400 rounded-full flex items-center justify-center shadow-lg hover:bg-primary hover:text-white transition-all duration-300"
-          title="Quick View"
-        >
-          <Eye className="w-5 h-5" />
-        </button>
-      </div>
+      {/* Action Buttons (Right Side) Removed */}
 
       {/* Main Link Wrapper for Clickability */}
-      <Link to={`/product/${product.id}`} className="grow flex flex-col">
+      {/* Main Link Wrapper for Clickability */}
+      <Link to={`/product/${product.slug || product.id || product._id}`} className="grow flex flex-col">
         {/* Image Container - Enforced Aspect Ratio for Uniformity */}
         <div className="relative aspect-square p-10 bg-slate-50/50 group-hover:bg-slate-50 transition-colors duration-500 overflow-hidden">
           {isImageLoading && (

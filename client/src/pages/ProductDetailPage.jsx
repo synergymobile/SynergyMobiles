@@ -33,11 +33,18 @@ const ProductDetailPage = () => {
 
   useEffect(() => {
     if (products.length > 0 && slug) {
-      const found = products.find(p => p.id === parseInt(slug));
+      // Try to find by slug first
+      let found = products.find(p => p.slug === slug);
+      
+      // If not found, try available ID formats (Mongo _id or numeric id)
+      if (!found) {
+        found = products.find(p => p._id === slug || (p.id && p.id === parseInt(slug)));
+      }
+      
       if (found) {
         setProduct(found);
         setSelectedColor(found.colors && found.colors.length > 0 ? found.colors[0] : null);
-        setSelectedImage(found.image);
+        setSelectedImage(found.images && found.images.length > 0 ? found.images[0] : found.image);
       }
     }
   }, [products, slug]);
@@ -94,17 +101,20 @@ const ProductDetailPage = () => {
                 </button>
               </div>
 
-              <div className="grid grid-cols-5 gap-3 sm:gap-4 max-w-md mx-auto lg:mx-0">
-                {product.images && product.images.map((img, index) => (
-                  <div 
-                    key={index} 
-                    className={`cursor-pointer bg-white rounded-xl sm:rounded-2xl overflow-hidden aspect-square transition-all duration-300 p-2 flex items-center justify-center border-2 ${selectedImage === img ? 'border-primary shadow-lg scale-105' : 'border-transparent hover:border-gray-200'}`}
-                    onClick={() => setSelectedImage(img)}
-                  >
-                    <img src={img} alt={`${product.name} ${index + 1}`} className="w-full h-full object-contain mix-blend-multiply" />
-                  </div>
-                ))}
-              </div>
+              {/* Thumbnails - Only show if we have images */}
+              {(product.images && product.images.length > 1) && (
+                <div className="grid grid-cols-5 gap-3 sm:gap-4 max-w-md mx-auto lg:mx-0">
+                  {product.images.map((img, index) => (
+                    <div 
+                      key={index} 
+                      className={`cursor-pointer bg-white rounded-xl sm:rounded-2xl overflow-hidden aspect-square transition-all duration-300 p-2 flex items-center justify-center border-2 ${selectedImage === img ? 'border-primary shadow-lg scale-105' : 'border-transparent hover:border-gray-200'}`}
+                      onClick={() => setSelectedImage(img)}
+                    >
+                      <img src={img} alt={`${product.name} ${index + 1}`} className="w-full h-full object-contain mix-blend-multiply" />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Info Section */}
@@ -132,7 +142,7 @@ const ProductDetailPage = () => {
                 )}
               </div>
 
-              <p className="text-slate-500 mb-10 leading-relaxed text-sm sm:text-base font-medium">{product.description}</p>
+              {/* Description removed to avoid duplication */}
 
               {product.colors && product.colors.length > 0 && (
                 <div className="mb-10">
@@ -238,8 +248,20 @@ const ProductDetailPage = () => {
                       Product Description
                   </h3>
                   <div className="prose max-w-none text-gray-600 leading-relaxed">
-                      <p>{product.description}</p>
-                      <p className="mt-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                      {product.description ? product.description.split('\n').map((line, index) => {
+                          const trimmed = line.trim();
+                          if (!trimmed) return <br key={index} />;
+                          
+                          if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
+                              return (
+                                  <div key={index} className="flex gap-3 mb-2 pl-2">
+                                      <span className="text-primary font-bold">•</span>
+                                      <span>{trimmed.substring(1).trim()}</span>
+                                  </div>
+                              );
+                          }
+                          return <p key={index} className="mb-4">{line}</p>;
+                      }) : <p>No description available.</p>}
                   </div>
               </div>
               
