@@ -6,7 +6,9 @@
   "scripts": {
     "postinstall": "cd server && npm install",
     "build": "node build-deploy.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "client": "cd client && npm run dev",
+    "dev": "start cmd /k npm start && start cmd /k npm run client"
   },
   "dependencies": {
     "express": "^5.2.1",

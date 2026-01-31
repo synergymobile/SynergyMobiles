@@ -130,9 +130,9 @@ const AdminLoginPage = () => {
         </div>
         
         <div className="mt-8 flex justify-center gap-6">
-            <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
+            <div className="text-slate-600 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-500" /> Server Status: Optimal
-            </p>
+            </div>
         </div>
       </div>
     </div>
