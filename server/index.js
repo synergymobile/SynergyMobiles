@@ -42,9 +42,27 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
+const mongoose = require('mongoose');
+
 // Health check endpoint
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', uptime: process.uptime() });
+});
+
+// Database health check
+app.get('/health-db', (req, res) => {
+    const state = mongoose.connection.readyState;
+    const states = {
+        0: 'disconnected',
+        1: 'connected',
+        2: 'connecting',
+        3: 'disconnecting',
+    };
+    res.status(200).json({ 
+        status: states[state] || 'unknown',
+        readyState: state,
+        host: mongoose.connection.host 
+    });
 });
 
 // Log all requests for debugging

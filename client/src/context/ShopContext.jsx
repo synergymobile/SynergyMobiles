@@ -5,7 +5,10 @@ const ShopContext = createContext();
 
 export const useShop = () => useContext(ShopContext);
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 
+    ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? 'http://localhost:5000/api' 
+        : '/api');
 
 console.log('ShopContext: API_BASE_URL is set to:', API_BASE_URL);
 console.log('ShopContext: Current Hostname:', window.location.hostname);
