@@ -45,9 +45,19 @@ router.post('/', async (req, res) => {
 // Auth User & Get Token
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
+    console.log(`[LOGIN ATTEMPT] Email: ${email}`);
     try {
         const user = await User.findOne({ email });
-        if (user && (await user.matchPassword(password))) {
+        
+        if (!user) {
+            console.log(`[LOGIN FAILED] User not found for email: ${email}`);
+            res.status(401).json({ message: 'Invalid email or password' });
+            return;
+        }
+
+        const isMatch = await user.matchPassword(password);
+        if (isMatch) {
+            console.log(`[LOGIN SUCCESS] User: ${user.name} (${user._id})`);
             res.json({
                 _id: user._id,
                 name: user.name,
@@ -56,9 +66,11 @@ router.post('/login', async (req, res) => {
                 token: generateToken(user._id),
             });
         } else {
+            console.log(`[LOGIN FAILED] Password mismatch for email: ${email}`);
             res.status(401).json({ message: 'Invalid email or password' });
         }
     } catch (error) {
+        console.error(`[LOGIN ERROR] ${error.message}`);
         res.status(500).json({ message: error.message });
     }
 });
