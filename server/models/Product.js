@@ -13,6 +13,7 @@ const productSchema = new mongoose.Schema({
     stock: { type: Number, default: 0 },
     features: [{ type: String }],
     specifications: { type: Map, of: String },
+    videoLink: { type: String }, // URL to product video (YouTube, TikTok, etc.)
     isFeatured: { type: Boolean, default: false },
     isBestSeller: { type: Boolean, default: false },
 }, { timestamps: true });

@@ -52,7 +52,8 @@ router.post('/', protect, admin, async (req, res) => {
             isHotDeal,
             isNewArrival,
             features,
-            specifications
+            specifications,
+            videoLink
         } = req.body;
 
         // Validate required fields
@@ -82,6 +83,7 @@ router.post('/', protect, admin, async (req, res) => {
             stock: parseInt(stock) || 0,
             features: features || [],
             specifications: specifications || {},
+            videoLink: videoLink || '',
             isFeatured: isFeatured || false,
             isBestSeller: isHotDeal || isNewArrival || false,
         });
@@ -108,6 +110,7 @@ router.put('/:id', protect, admin, async (req, res) => {
             product.stock = req.body.stock || product.stock;
             product.features = req.body.features || product.features;
             product.specifications = req.body.specifications || product.specifications;
+            product.videoLink = req.body.videoLink !== undefined ? req.body.videoLink : product.videoLink;
             product.isFeatured = req.body.isFeatured !== undefined ? req.body.isFeatured : product.isFeatured;
             product.isBestSeller = req.body.isBestSeller !== undefined ? req.body.isBestSeller : product.isBestSeller;
 
