@@ -71,12 +71,40 @@ const CheckoutModal = ({ isOpen, onClose }) => {
         return;
     }
 
+    // Construct WhatsApp Message (Create before placing order as cart gets cleared)
+    const phoneNumber = "923001234567"; // Synergy Mobiles Contact
+    let message = `*New Order Request*\n\n`;
+    message += `*Customer Details:*\n`;
+    message += `Name: ${formData.fullName}\n`;
+    message += `Phone: ${formData.phone}\n`;
+    message += `Address: ${formData.address}, ${formData.city}\n\n`;
+
+    message += `*Order Details:*\n`;
+    cart.forEach(item => {
+        message += `- ${item.name} x ${item.quantity}: PKR ${(item.price * item.quantity).toLocaleString()}\n`;
+    });
+
+    message += `\n*Total Amount:* PKR ${(cartTotal + 200).toLocaleString()}\n`;
+    message += `Payment Method: ${getPaymentMethodName(formData.paymentMethod)}\n`;
+
+    if (formData.paymentMethod === 'cod' && formData.transactionId) {
+         message += `Transaction ID: ${formData.transactionId}\n`;
+    }
+
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
     const result = await placeOrder(formData);
     if (result.success) {
         setOrderNumber(result.id);
         setStep(4);
+        // Redirect to WhatsApp
+        window.open(whatsappUrl, '_blank');
     } else {
         alert(result.message);
+        // Optional: Offer WhatsApp fallback if API fails
+        if (confirm("Order saving failed. Do you want to send your order via WhatsApp directly?")) {
+            window.open(whatsappUrl, '_blank');
+        }
     }
   };
 
@@ -364,6 +392,20 @@ const CheckoutModal = ({ isOpen, onClose }) => {
         </div>
       </div>
       
+      {whatsappLink && (
+        <div className="mb-6 w-full max-w-md">
+            <a 
+                href={whatsappLink} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-full py-3 bg-[#25D366] text-white rounded-lg hover:bg-[#128C7E] transition-colors font-bold flex items-center justify-center gap-2 shadow-lg"
+            >
+                <i className="fab fa-whatsapp text-xl"></i> Send Order Details on WhatsApp
+            </a>
+            <p className="text-xs text-gray-500 mt-2">Click above if WhatsApp didn't open automatically.</p>
+        </div>
+      )}
+
       <div>
         <button className="px-8 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors font-bold flex items-center gap-2" onClick={onClose}>
           <i className="fas fa-shopping-bag"></i> Continue Shopping
