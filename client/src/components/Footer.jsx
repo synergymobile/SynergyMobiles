@@ -58,8 +58,8 @@ const Footer = () => {
             <h3 className="text-xl font-bold text-white mb-6 relative after:content-[''] after:absolute after:left-0 after:-bottom-2 after:w-12 after:h-1 after:bg-primary">Contact Info</h3>
             <ul className="flex flex-col gap-4 mb-6">
               <li><a href="#" className="text-gray-400 hover:text-primary transition-colors flex items-start gap-3"><i className="fas fa-map-marker-alt mt-1 text-primary"></i> <span>Main Branch: Liberty Market, Lahore</span></a></li>
-              <li><a href="#" className="text-gray-400 hover:text-primary transition-colors flex items-center gap-3"><i className="fas fa-phone text-primary"></i> +92 300 123 4567</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-primary transition-colors flex items-center gap-3"><i className="fas fa-envelope text-primary"></i> info@synergymobiles.pk</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-primary transition-colors flex items-center gap-3"><i className="fas fa-phone text-primary"></i> +92 300 9786786</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-primary transition-colors flex items-center gap-3"><i className="fas fa-envelope text-primary"></i> admin@synergymobiles.com</a></li>
               <li><a href="#" className="text-gray-400 hover:text-primary transition-colors flex items-center gap-3"><i className="fas fa-clock text-primary"></i> Mon-Sat: 10:00 AM - 10:00 PM</a></li>
             </ul>
             <h4 className="text-white font-semibold mb-4 text-base">Payment Methods</h4>

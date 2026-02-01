@@ -76,7 +76,7 @@ const AdminLoginPage = () => {
                 <input 
                   type="email" 
                   className="w-full pl-12 pr-4 py-4 bg-slate-900/50 border border-slate-700 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium text-white placeholder:text-slate-600"
-                  placeholder="admin@synergy.com"
+                  placeholder="admin@synergymobiles.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required

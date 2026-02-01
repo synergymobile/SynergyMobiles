@@ -5,7 +5,7 @@ import VideoModal from '../components/VideoModal';
 
 const ProductDetailPage = () => {
   const { slug } = useParams();
-  const { products, addToCart } = useShop();
+  const { products, addToCart, getImageUrl } = useShop();
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState(null);
@@ -87,7 +87,7 @@ const ProductDetailPage = () => {
             <div className="lg:col-span-7 p-6 sm:p-10 lg:p-16 bg-gray-50/50 flex flex-col">
               <div className="relative aspect-square flex items-center justify-center mb-6 sm:mb-10 group bg-white rounded-2xl md:rounded-4xl shadow-sm border border-gray-100 overflow-hidden">
                 <img 
-                  src={selectedImage} 
+                  src={getImageUrl(selectedImage)} 
                   alt={product.name} 
                   className="max-w-full max-h-[300px] sm:max-h-[500px] object-contain p-6 sm:p-10 mix-blend-multiply transition-transform duration-700 group-hover:scale-110" 
                 />
@@ -96,9 +96,17 @@ const ProductDetailPage = () => {
                     -{discount}% OFF
                   </div>
                 )}
-                 <button className="absolute top-4 right-4 sm:top-8 sm:right-8 w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center rounded-full bg-white shadow-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all duration-300 z-10">
-                  <i className="far fa-heart text-lg sm:text-xl"></i>
-                </button>
+                {product.videoLink && (
+                  <a 
+                    href={product.videoLink} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="absolute top-4 right-4 sm:top-8 sm:right-8 w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center rounded-full bg-white shadow-xl text-slate-900 hover:bg-primary hover:text-white transition-all duration-300 z-10"
+                    title="Watch Review"
+                  >
+                    <Play className="w-4 h-4 sm:w-6 sm:h-6 fill-current ml-0.5" />
+                  </a>
+                )}
               </div>
 
               {/* Thumbnails - Only show if we have images */}
@@ -110,7 +118,7 @@ const ProductDetailPage = () => {
                       className={`cursor-pointer bg-white rounded-xl sm:rounded-2xl overflow-hidden aspect-square transition-all duration-300 p-2 flex items-center justify-center border-2 ${selectedImage === img ? 'border-primary shadow-lg scale-105' : 'border-transparent hover:border-gray-200'}`}
                       onClick={() => setSelectedImage(img)}
                     >
-                      <img src={img} alt={`${product.name} ${index + 1}`} className="w-full h-full object-contain mix-blend-multiply" />
+                      <img src={getImageUrl(img)} alt={`${product.name} ${index + 1}`} className="w-full h-full object-contain mix-blend-multiply" />
                     </div>
                   ))}
                 </div>
@@ -274,7 +282,7 @@ const ProductDetailPage = () => {
                    </h3>
                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       {allVideos.map((video, index) => {
-                         const videoUrl = video.type === 'uploaded' ? video.url : video.url;
+                         const videoUrl = getImageUrl(video.url);
                          const thumbUrl = video.type === 'uploaded' 
                            ? null 
                            : `https://img.youtube.com/vi/${getYouTubeId(video.url)}/0.jpg`;

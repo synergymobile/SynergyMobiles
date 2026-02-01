@@ -65,7 +65,7 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-400 mb-1">Phone Number</p>
-                    <p className="font-semibold text-lg">+92 300 123 4567</p>
+                    <p className="font-semibold text-lg">+92 300 9786786</p>
                   </div>
                 </div>
 
@@ -75,7 +75,7 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-400 mb-1">Email Address</p>
-                    <p className="font-semibold text-lg">info@synergymobiles.pk</p>
+                    <p className="font-semibold text-lg">admin@synergymobiles.com</p>
                   </div>
                 </div>
 

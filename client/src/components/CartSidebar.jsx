@@ -2,7 +2,7 @@ import React from 'react';
 import { useShop } from '../context/ShopContext';
 
 const CartSidebar = () => {
-    const { isCartOpen, toggleCart, cart, removeFromCart, updateQuantity, cartTotal, openCheckout } = useShop();
+    const { isCartOpen, toggleCart, cart, removeFromCart, updateQuantity, cartTotal, openCheckout, getImageUrl } = useShop();
 
     return (
         <>
@@ -34,7 +34,7 @@ const CartSidebar = () => {
                         cart.map(item => (
                             <div className="flex gap-3 mb-4 p-3 bg-white border border-gray-100 rounded-lg shadow-sm hover:shadow-md transition-shadow" key={item.id}>
                                 <div className="w-16 h-16 shrink-0 bg-gray-50 rounded p-1 flex items-center justify-center">
-                                    <img src={item.image} alt={item.name} className="max-w-full max-h-full object-contain" />
+                                    <img src={getImageUrl(item.image)} alt={item.name} className="max-w-full max-h-full object-contain" />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <h4 className="font-semibold text-gray-800 text-sm mb-1 truncate">{item.name}</h4>

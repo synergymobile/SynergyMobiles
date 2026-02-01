@@ -3,7 +3,7 @@ import { useShop } from '../context/ShopContext';
 import { X, ArrowRight, Sparkles } from 'lucide-react';
 
 const DealPosterModal = () => {
-  const { dealPoster } = useShop();
+  const { dealPoster, getImageUrl } = useShop();
   const [isVisible, setIsVisible] = useState(false);
   const [isRendered, setIsRendered] = useState(false);
 
@@ -49,7 +49,7 @@ const DealPosterModal = () => {
         <div className="relative aspect-4/5 sm:aspect-3/4 group overflow-hidden">
           {/* Main Cinematic Visual */}
           <img 
-            src={dealPoster.image} 
+            src={getImageUrl(dealPoster.image)} 
             alt="Elite Deal" 
             className="w-full h-full object-cover transition-transform duration-8000 ease-out group-hover:scale-125" 
           />

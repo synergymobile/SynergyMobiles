@@ -7,7 +7,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const handleWhatsAppCheckout = () => {
-    const phoneNumber = "923001234567"; // Synergy Mobiles Contact
+    const phoneNumber = "923009786786"; // Synergy Mobiles Contact
     let message = `*New Order Request*\n\n`;
     
     message += `*Order Details:*\n`;

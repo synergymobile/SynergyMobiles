@@ -20,7 +20,8 @@ import {
   MoreVertical,
   Check,
   LayoutGrid,
-  List
+  List,
+  Play
 } from 'lucide-react';
 import Logo from '../components/Logo';
 import NotificationModal from '../components/NotificationModal';
@@ -35,7 +36,8 @@ const AdminDashboard = () => {
     deleteProduct, 
     updateProduct,
     uploadProductImages,
-    isLoading
+    isLoading,
+    getImageUrl
   } = useShop();
   
   const navigate = useNavigate();
@@ -66,6 +68,7 @@ const AdminDashboard = () => {
     image: '',
     images: [],
     videos: [],
+    videoLink: '',
     colors: [],
     isFeatured: false,
     isHotDeal: false,
@@ -113,6 +116,7 @@ const AdminDashboard = () => {
       image: '',
       images: [],
       videos: [],
+      videoLink: '',
       colors: [],
       isFeatured: false,
       isHotDeal: false,
@@ -130,7 +134,10 @@ const AdminDashboard = () => {
 
       // Handle image uploads
       if (productForm.selectedFiles && productForm.selectedFiles.length > 0) {
+        console.log('AdminDashboard: Uploading files...', productForm.selectedFiles);
         const imageUrls = await uploadProductImages(productForm.selectedFiles);
+        console.log('AdminDashboard: Received image URLs:', imageUrls);
+        
         if (imageUrls && imageUrls.length > 0) {
           finalProductForm.image = imageUrls[0];
           finalProductForm.images = imageUrls;
@@ -409,7 +416,7 @@ const AdminDashboard = () => {
                                                 <td className="px-6 py-4 pl-8">
                                                     <div className="flex items-center gap-4">
                                                         <div className="w-16 h-16 rounded-xl bg-slate-100 border border-slate-200 p-2 shrink-0">
-                                                            <img src={product.image || product.images?.[0]} alt="" className="w-full h-full object-contain mix-blend-multiply" />
+                                                            <img src={getImageUrl(product.image || product.images?.[0])} alt="" className="w-full h-full object-contain mix-blend-multiply" />
                                                         </div>
                                                         <div>
                                                             <div className="text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-0.5">{product.brand}</div>
@@ -669,7 +676,7 @@ const AdminDashboard = () => {
                                {(productForm.selectedFiles?.length > 0 ? productForm.selectedFiles : (productForm.images || [])).slice(0, 3).map((file, i) => (
                                   <div key={i} className="aspect-square rounded-xl overflow-hidden border border-slate-200 bg-white shadow-sm relative group">
                                      <img 
-                                       src={file instanceof File ? URL.createObjectURL(file) : file} 
+                                       src={file instanceof File ? URL.createObjectURL(file) : getImageUrl(file)} 
                                        alt="preview" 
                                        className="w-full h-full object-cover" 
                                      />
@@ -715,6 +722,20 @@ const AdminDashboard = () => {
                               Product Images (Upload 3 for Gallery)
                             </label>
                          </div>
+                         
+                         <div className="pt-6 mt-6 border-t border-slate-100">
+                           <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 ml-1">Video Review Link</label>
+                           <div className="relative">
+                             <Play className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                             <input 
+                               type="url" 
+                               placeholder="https://youtube.com/..." 
+                               className="w-full pl-11 pr-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl focus:outline-none focus:border-pink-500 focus:bg-white transition-all font-bold text-slate-800 text-sm"
+                               value={productForm.videoLink}
+                               onChange={e => setProductForm({...productForm, videoLink: e.target.value})}
+                             />
+                           </div>
+                        </div>
                       </div>
 
                       {/* Status Card */}

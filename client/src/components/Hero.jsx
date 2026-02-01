@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useShop } from '../context/ShopContext';
 import { ChevronRight, List, Smartphone, Tablet, Watch, Headphones, Battery, ShieldCheck, Truck, Clock } from 'lucide-react';
 
 const Hero = () => {
+    const { getImageUrl } = useShop();
     const [activeSlide, setActiveSlide] = useState(0);
     const slides = [
         {
@@ -97,7 +99,7 @@ const Hero = () => {
                                     className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === activeSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
                                 >
                                     <img 
-                                        src={slide.image} 
+                                        src={getImageUrl(slide.image)} 
                                         alt={slide.title.replace('<br>', ' ')}
                                         className={`absolute inset-0 w-full h-full object-cover transition-transform duration-7000 ease-linear ${index === activeSlide ? 'scale-110' : 'scale-100'}`}
                                     />

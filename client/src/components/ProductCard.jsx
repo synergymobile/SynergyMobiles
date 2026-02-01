@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
-import { ShoppingCart, Star } from 'lucide-react';
+import { ShoppingCart, Star, Play } from 'lucide-react';
 
 const ProductCard = ({ product }) => {
-  const { addToCart } = useShop();
+  const { addToCart, getImageUrl } = useShop();
   const [isHovered, setIsHovered] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(true);
 
@@ -41,6 +41,20 @@ const ProductCard = ({ product }) => {
         )}
       </div>
 
+      {/* Video Link Button */}
+      {product.videoLink && (
+        <a 
+          href={product.videoLink} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className={`absolute top-4 right-4 z-20 w-10 h-10 bg-white text-slate-900 rounded-full flex items-center justify-center shadow-xl hover:bg-primary hover:text-white transition-all duration-500 transform ${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}
+          title="Watch Review"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Play className="w-4 h-4 fill-current ml-0.5" />
+        </a>
+      )}
+
       {/* Action Buttons (Right Side) Removed */}
 
       {/* Main Link Wrapper for Clickability */}
@@ -54,7 +68,7 @@ const ProductCard = ({ product }) => {
             </div>
           )}
           <img 
-            src={product.images && product.images.length > 0 ? product.images[0] : product.image} 
+            src={getImageUrl(product.images && product.images.length > 0 ? product.images[0] : product.image)} 
             alt={product.name}
             onLoad={() => setIsImageLoading(false)}
             className={`w-full h-full object-contain mix-blend-multiply transition-all duration-700 ease-out ${isHovered ? 'scale-110 -rotate-2' : 'scale-100'} ${isImageLoading ? 'opacity-0' : 'opacity-100'}`}

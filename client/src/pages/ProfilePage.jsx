@@ -15,7 +15,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
-    const { user, userOrders, logoutUser, isUserLoggedIn } = useShop();
+    const { user, userOrders, logoutUser, isUserLoggedIn, getImageUrl } = useShop();
     const navigate = useNavigate();
 
     if (!isUserLoggedIn) {
@@ -130,7 +130,7 @@ const ProfilePage = () => {
                                                 <div className="flex items-center gap-3 overflow-x-auto pb-4 custom-scrollbar">
                                                     {order.orderItems.map((item, idx) => (
                                                         <div key={idx} className="shrink-0 w-14 h-14 md:w-16 md:h-16 bg-white rounded-xl border border-slate-100 p-1 group-hover:border-primary/20 transition-all">
-                                                            <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-lg" />
+                                                            <img src={getImageUrl(item.image)} alt={item.name} className="w-full h-full object-cover rounded-lg" />
                                                         </div>
                                                     ))}
                                                 </div>

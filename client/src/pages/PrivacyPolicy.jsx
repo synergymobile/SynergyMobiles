@@ -72,7 +72,7 @@ const PrivacyPolicy = () => {
 
             <div className="border-t border-gray-200 pt-8 text-sm text-gray-500 text-center">
               <p>Last updated: January 25, 2026</p>
-              <p className="mt-2">If you have any questions, please contact us at info@synergymobiles.pk</p>
+              <p className="mt-2">If you have any questions, please contact us at admin@synergymobiles.com</p>
             </div>
           </div>
         </div>

@@ -10,6 +10,12 @@ const API_BASE_URL = import.meta.env.VITE_API_URL ||
         ? 'http://localhost:5000/api' 
         : '/api');
 
+const SERVER_URL = import.meta.env.VITE_API_URL 
+    ? import.meta.env.VITE_API_URL.replace('/api', '') 
+    : ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? 'http://localhost:5000' 
+        : '');
+
 console.log('ShopContext: API_BASE_URL is set to:', API_BASE_URL);
 console.log('ShopContext: Current Hostname:', window.location.hostname);
 
@@ -259,6 +265,7 @@ export const ShopProvider = ({ children }) => {
 
     const uploadProductImages = async (files) => {
         try {
+            console.log('Starting image upload for files:', files);
             const formData = new FormData();
             files.forEach(file => {
                 formData.append('images', file);
@@ -272,9 +279,14 @@ export const ShopProvider = ({ children }) => {
             };
 
             const { data } = await axios.post(`${API_BASE_URL}/upload`, formData, config);
-            return data; // Returns array of Cloudinary URLs
+            console.log('Image upload successful. Response data (URLs):', data);
+            return data; // Returns array of image URLs
         } catch (error) {
             console.error('Image upload failed:', error);
+            if (error.response) {
+                console.error('Error Response Data:', error.response.data);
+                console.error('Error Response Status:', error.response.status);
+            }
             return null;
         }
     };
@@ -316,6 +328,14 @@ export const ShopProvider = ({ children }) => {
     };
 
     const updateDealPoster = (newPoster) => setDealPoster(newPoster);
+
+    const getImageUrl = (path) => {
+        if (!path) return '';
+        if (path.startsWith('http') || path.startsWith('blob:') || path.startsWith('data:')) return path;
+        // Ensure path starts with / if not present (though upload usually adds it)
+        const cleanPath = path.startsWith('/') ? path : `/${path}`;
+        return `${SERVER_URL}${cleanPath}`;
+    };
 
     const placeOrder = async (formData) => {
         try {
@@ -389,7 +409,8 @@ export const ShopProvider = ({ children }) => {
             updateProduct,
             deleteProduct,
             uploadProductImages,
-            updateDealPoster
+            updateDealPoster,
+            getImageUrl
         }}>
             {children}
         </ShopContext.Provider>

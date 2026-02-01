@@ -5,7 +5,7 @@ import VideoModal from './VideoModal';
 import { X, Star, ShoppingCart, Heart, Truck, ShieldCheck, Play, CheckCircle } from 'lucide-react';
 
 const ProductModal = ({ product, isOpen, onClose }) => {
-  const { addToCart } = useShop();
+  const { addToCart, getImageUrl } = useShop();
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || null);
   const [selectedImage, setSelectedImage] = useState(product?.image || null);
@@ -59,7 +59,7 @@ const ProductModal = ({ product, isOpen, onClose }) => {
           <div className="relative grow flex items-center justify-center min-h-[350px] mb-10 group">
              <div className="absolute inset-0 bg-white/50 rounded-full blur-3xl opacity-20 scale-75"></div>
             <img 
-              src={selectedImage} 
+              src={getImageUrl(selectedImage)} 
               alt={product.name} 
               className="max-w-full max-h-[450px] object-contain mix-blend-multiply transition-all duration-700 group-hover:scale-110 drop-shadow-2xl relative z-10" 
             />
@@ -85,7 +85,7 @@ const ProductModal = ({ product, isOpen, onClose }) => {
                 className="w-20 h-20 shrink-0 bg-white rounded-3xl border-4 cursor-pointer transition-all duration-300 p-2 overflow-hidden shadow-sm"
                 onClick={() => setSelectedImage(img)}
               >
-                <img src={img} alt={`${product.name} thumbnail`} className="w-full h-full object-contain mix-blend-multiply" />
+                <img src={getImageUrl(img)} alt={`${product.name} thumbnail`} className="w-full h-full object-contain mix-blend-multiply" />
               </button>
             ))}
           </div>
@@ -201,7 +201,7 @@ const ProductModal = ({ product, isOpen, onClose }) => {
             <div className="mt-12 pt-8 border-t border-slate-50">
               <button 
                 className="flex items-center gap-3 text-primary font-black hover:text-primary-dark transition-all group"
-                onClick={() => openVideo(allVideos[0]?.url || product.packagingVideo)}
+                onClick={() => openVideo(getImageUrl(allVideos[0]?.url || product.packagingVideo))}
               >
                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Play className="w-5 h-5 fill-current" />
