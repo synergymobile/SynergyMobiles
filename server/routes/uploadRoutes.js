@@ -38,7 +38,7 @@ const upload = multer({
     },
 });
 
-router.post('/', protect, admin, upload.array('images', 3), async (req, res) => {
+router.post('/', protect, admin, upload.array('images', 50), async (req, res) => {
     try {
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ message: 'No images uploaded' });

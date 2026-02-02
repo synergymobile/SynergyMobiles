@@ -119,7 +119,7 @@ const ProductPage = () => {
   }, [products, selectedCategory, selectedBrand, priceRange, sortBy]);
 
   // Unique values for filters
-  const categories = ['smartphone', 'tablet', 'wearable', 'audio', 'accessory'];
+  const categories = [...new Set(products.map(p => p.category))].filter(Boolean).sort();
   const brands = [...new Set(products.map(p => p.brand))];
 
   const clearFilters = () => {

@@ -19,9 +19,12 @@ import {
   ChevronRight,
   MoreVertical,
   Check,
+  CheckCircle,
+  AlertCircle,
   LayoutGrid,
   List,
-  Play
+  Play,
+  Menu
 } from 'lucide-react';
 import Logo from '../components/Logo';
 import NotificationModal from '../components/NotificationModal';
@@ -47,6 +50,12 @@ const AdminDashboard = () => {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [stockFilter, setStockFilter] = useState('all');
   const [viewMode, setViewMode] = useState('table'); // 'table' or 'grid'
+
+  const existingCategories = useMemo(() => {
+    const categories = new Set(products.map(p => p.category).filter(Boolean));
+    return Array.from(categories).sort();
+  }, [products]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const [isUploading, setIsUploading] = useState(false);
   const [notification, setNotification] = useState({
@@ -228,6 +237,7 @@ const AdminDashboard = () => {
       onClick={() => {
         if(id === 'add-product') { setEditingProduct(null); resetForm(); }
         setActiveTab(id);
+        setIsMobileMenuOpen(false);
       }}
     >
       <div className="flex items-center gap-3">
@@ -244,11 +254,27 @@ const AdminDashboard = () => {
 
   return (
     <div className="flex bg-slate-50 min-h-screen text-slate-900 font-sans">
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/50 z-40 lg:hidden backdrop-blur-sm"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-72 bg-slate-900 border-r border-slate-800 fixed h-full z-50 flex-col p-6 hidden lg:flex">
-        <div className="mb-10 px-2">
-          <Logo variant="light" className="h-10 w-auto" />
-          <p className="text-[10px] uppercase tracking-[0.3em] text-slate-500 font-bold mt-2 ml-1 opacity-60">Management</p>
+      <aside className={`w-72 bg-slate-900 border-r border-slate-800 fixed h-full z-50 flex flex-col p-6 transition-transform duration-300 lg:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="mb-10 px-2 flex items-center justify-between">
+          <div>
+            <Logo variant="light" className="h-10 w-auto" />
+            <p className="text-[10px] uppercase tracking-[0.3em] text-slate-500 font-bold mt-2 ml-1 opacity-60">Management</p>
+          </div>
+          <button 
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="lg:hidden text-slate-400 hover:text-white"
+          >
+            <X className="w-6 h-6" />
+          </button>
         </div>
 
         <nav className="flex-1">
@@ -270,23 +296,38 @@ const AdminDashboard = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 lg:ml-72 p-6 lg:p-10 pb-24 max-w-[1920px]">
+      <main className="flex-1 lg:ml-72 p-4 md:p-6 lg:p-10 pb-24 max-w-[1920px] w-full">
         {/* Header */}
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
-          <div>
-            <h1 className="text-4xl font-black tracking-tight capitalize bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {activeTab === 'add-product' ? (editingProduct ? 'Edit Product' : 'New Product') : 'Inventory'}
-            </h1>
-            <p className="text-slate-500 text-sm mt-1 font-medium">
-              {activeTab === 'products' ? 'Manage your product catalog, prices, and stock.' : 'Fill in the details below to update your catalog.'}
-            </p>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <div className={`px-4 py-2 rounded-xl text-sm font-bold shadow-sm border ${activeTab === 'products' ? 'bg-white border-slate-200 text-slate-700' : 'bg-blue-50 border-blue-100 text-blue-600'}`}>
-              Total Items: {products.length}
+        <header className="flex flex-col gap-4 mb-8 lg:mb-10">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="lg:hidden p-2 bg-white rounded-xl shadow-sm border border-slate-200 text-slate-600"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+              <div>
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight capitalize bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  {activeTab === 'add-product' ? (editingProduct ? 'Edit Product' : 'New Product') : 'Inventory'}
+                </h1>
+                <p className="text-slate-500 text-xs md:text-sm mt-1 font-medium hidden sm:block">
+                  {activeTab === 'products' ? 'Manage your product catalog, prices, and stock.' : 'Fill in the details below to update your catalog.'}
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <div className={`px-3 py-1.5 md:px-4 md:py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm border ${activeTab === 'products' ? 'bg-white border-slate-200 text-slate-700' : 'bg-blue-50 border-blue-100 text-blue-600'}`}>
+                <span className="hidden sm:inline">Total Items: </span>
+                <span className="sm:hidden">Total: </span>
+                {products.length}
+              </div>
             </div>
           </div>
+          <p className="text-slate-500 text-xs md:text-sm font-medium sm:hidden">
+            {activeTab === 'products' ? 'Manage your product catalog.' : 'Update your catalog.'}
+          </p>
         </header>
 
         {isLoading ? (
@@ -311,16 +352,14 @@ const AdminDashboard = () => {
                   </div>
                   <div className="h-px xl:h-auto xl:w-px bg-slate-100 mx-2" />
                   <div className="flex gap-2 p-1 flex-wrap items-center">
-                    <div className="w-[180px]">
+                    <div className="flex-1 w-full sm:w-[180px]">
                       <CustomDropdown
                         options={[
                           { value: 'all', label: 'All Categories' },
-                          { value: 'smartphone', label: 'Smartphones' },
-                          { value: 'tablet', label: 'Tablets' },
-                          { value: 'accessories', label: 'Accessories' },
-                          { value: 'smartwatch', label: 'Smartwatches' },
-                          { value: 'laptop', label: 'Laptops' },
-                          { value: 'audio', label: 'Audio' }
+                          ...existingCategories.map(cat => ({ 
+                            value: cat, 
+                            label: cat.charAt(0).toUpperCase() + cat.slice(1) 
+                          }))
                         ]}
                         value={categoryFilter}
                         onChange={setCategoryFilter}
@@ -340,7 +379,7 @@ const AdminDashboard = () => {
                       />
                     </div>
                     
-                    <div className="flex bg-slate-100 rounded-xl p-1 ml-2">
+                    <div className="hidden md:flex bg-slate-100 rounded-xl p-1 ml-2">
                         <button 
                             onClick={() => setViewMode('table')}
                             className={`p-1.5 rounded-lg transition-all ${viewMode === 'table' ? 'bg-white shadow text-slate-800' : 'text-slate-400 hover:text-slate-600'}`}
@@ -373,31 +412,33 @@ const AdminDashboard = () => {
                     </div>
                 ) : (
                     <>
-                    {viewMode === 'grid' ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {filteredProducts.map(product => (
-                                // Keeping the existing card design as an option since it's "grid"
-                                <div key={product._id || product.id} className="bg-white border border-slate-200 rounded-3xl overflow-hidden group hover:shadow-xl transition-all duration-500 relative flex flex-col">
-                                    <div className="aspect-square bg-slate-50 p-6 relative overflow-hidden">
-                                        <img src={product.image || product.images?.[0]} alt={product.name} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
-                                        {product.stock < 5 && <span className="absolute top-4 left-4 bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-full uppercase">Low Stock</span>}
-                                    </div>
-                                    <div className="p-5 flex flex-col flex-1">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{product.brand}</span>
-                                        <h4 className="font-bold text-slate-900 mb-2 line-clamp-2">{product.name}</h4>
-                                        <div className="mt-auto flex items-center justify-between">
-                                            <span className="font-black text-lg">PKR {product.price.toLocaleString()}</span>
-                                            <div className="flex gap-2">
-                                                <button onClick={() => handleEditClick(product)} className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"><Edit3 className="w-4 h-4" /></button>
-                                                <button onClick={() => handleDeleteClick(product._id || product.id)} className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"><Trash2 className="w-4 h-4" /></button>
-                                            </div>
+                    {/* Grid View - Shown if viewMode is grid OR if viewMode is table but on mobile */}
+                    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${viewMode === 'table' ? 'block md:hidden' : ''}`}>
+                        {filteredProducts.map(product => (
+                            // Keeping the existing card design as an option since it's "grid"
+                            <div key={product._id || product.id} className="bg-white border border-slate-200 rounded-3xl overflow-hidden group hover:shadow-xl transition-all duration-500 relative flex flex-col">
+                                <div className="aspect-square bg-slate-50 p-6 relative overflow-hidden">
+                                    <img src={product.image || product.images?.[0]} alt={product.name} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
+                                    {product.stock < 5 && <span className="absolute top-4 left-4 bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-full uppercase">Low Stock</span>}
+                                </div>
+                                <div className="p-5 flex flex-col flex-1">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{product.brand}</span>
+                                    <h4 className="font-bold text-slate-900 mb-2 line-clamp-2">{product.name}</h4>
+                                    <div className="mt-auto flex items-center justify-between">
+                                        <span className="font-black text-lg">PKR {product.price.toLocaleString()}</span>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => handleEditClick(product)} className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"><Edit3 className="w-4 h-4" /></button>
+                                            <button onClick={() => handleDeleteClick(product._id || product.id)} className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"><Trash2 className="w-4 h-4" /></button>
                                         </div>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Table View - Shown ONLY if viewMode is table AND on desktop */}
+                    {viewMode === 'table' && (
+                        <div className="hidden md:block bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
@@ -546,20 +587,21 @@ const AdminDashboard = () => {
                             
                             <div className="group">
                                <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 ml-1">Category *</label>
-                               <CustomDropdown
-                                 options={[
-                                   { value: 'smartphone', label: 'Smartphone' },
-                                   { value: 'tablet', label: 'Tablet' },
-                                   { value: 'accessories', label: 'Accessories' },
-                                   { value: 'smartwatch', label: 'Smartwatch' },
-                                   { value: 'laptop', label: 'Laptop' },
-                                   { value: 'audio', label: 'Audio' }
-                                 ]}
-                                 value={productForm.category}
-                                 onChange={(val) => setProductForm({...productForm, category: val})}
-                                 placeholder="Select Category"
-                                 className="mt-1"
-                               />
+                               <div className="space-y-2">
+                                 <CustomDropdown
+                                   options={existingCategories.map(c => ({ value: c, label: c.charAt(0).toUpperCase() + c.slice(1) }))}
+                                   value={existingCategories.includes(productForm.category) ? productForm.category : ''}
+                                   onChange={(val) => setProductForm({...productForm, category: val})}
+                                   placeholder="Select Existing Category"
+                                 />
+                                 <input 
+                                   type="text" 
+                                   placeholder="Type custom category..." 
+                                   className="w-full px-5 py-3 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-bold text-slate-800 text-sm"
+                                   value={productForm.category}
+                                   onChange={e => setProductForm({...productForm, category: e.target.value.toLowerCase()})}
+                                 />
+                               </div>
                             </div>
                          </div>
                       </div>
@@ -663,7 +705,7 @@ const AdminDashboard = () => {
                                    const newFiles = Array.from(e.target.files);
                                    setProductForm(prev => {
                                      const existingFiles = prev.selectedFiles || [];
-                                     const combinedFiles = [...existingFiles, ...newFiles].slice(0, 3);
+                                     const combinedFiles = [...existingFiles, ...newFiles];
                                      return { ...prev, selectedFiles: combinedFiles };
                                    });
                                    e.target.value = '';
@@ -672,8 +714,8 @@ const AdminDashboard = () => {
                             </label>
 
                             {/* Preview Section */}
-                            <div className="grid grid-cols-3 gap-3">
-                               {(productForm.selectedFiles?.length > 0 ? productForm.selectedFiles : (productForm.images || [])).slice(0, 3).map((file, i) => (
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                               {(productForm.selectedFiles?.length > 0 ? productForm.selectedFiles : (productForm.images || [])).map((file, i) => (
                                   <div key={i} className="aspect-square rounded-xl overflow-hidden border border-slate-200 bg-white shadow-sm relative group">
                                      <img 
                                        src={file instanceof File ? URL.createObjectURL(file) : getImageUrl(file)} 
@@ -719,7 +761,7 @@ const AdminDashboard = () => {
                             )}
                             
                             <label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-1 block text-center">
-                              Product Images (Upload 3 for Gallery)
+                              Product Images (Unlimited)
                             </label>
                          </div>
                          

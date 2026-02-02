@@ -31,8 +31,8 @@ const CartSidebar = () => {
                             <button onClick={toggleCart} className="text-primary hover:underline">Continue Shopping</button>
                         </div>
                     ) : (
-                        cart.map(item => (
-                            <div className="flex gap-3 mb-4 p-3 bg-white border border-gray-100 rounded-lg shadow-sm hover:shadow-md transition-shadow" key={item.id}>
+                        cart.map((item, index) => (
+                            <div className="flex gap-3 mb-4 p-3 bg-white border border-gray-100 rounded-lg shadow-sm hover:shadow-md transition-shadow" key={item.id || item._id || index}>
                                 <div className="w-16 h-16 shrink-0 bg-gray-50 rounded p-1 flex items-center justify-center">
                                     <img src={getImageUrl(item.image)} alt={item.name} className="max-w-full max-h-full object-contain" />
                                 </div>

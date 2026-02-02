@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import VideoModal from '../components/VideoModal';
+import { Play } from 'lucide-react';
 
 const ProductDetailPage = () => {
   const { slug } = useParams();
