@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Smartphone, Tablet, Watch, Headphones, Battery, Truck, Shield, Clock, CreditCard } from 'lucide-react';
 import Hero from '../components/Hero';
@@ -14,13 +14,28 @@ const HomePage = () => {
   const newArrivals = products.filter(p => p.isNewArrival).slice(0, 8);
   const bestSellers = products.filter(p => p.rating >= 4.7).slice(0, 8);
 
-  const categories = [
-    { id: 'smartphone', name: 'Smartphones', icon: Smartphone, color: 'text-blue-500 bg-blue-50' },
-    { id: 'tablet', name: 'Tablets', icon: Tablet, color: 'text-emerald-500 bg-emerald-50' },
-    { id: 'wearable', name: 'Wearables', icon: Watch, color: 'text-purple-500 bg-purple-50' },
-    { id: 'audio', name: 'Audio', icon: Headphones, color: 'text-rose-500 bg-rose-50' },
-    { id: 'accessory', name: 'Accessories', icon: Battery, color: 'text-amber-500 bg-amber-50' },
-  ];
+  const categories = useMemo(() => {
+    const categoryMap = {
+      smartphone: { icon: Smartphone, color: 'text-blue-500 bg-blue-50' },
+      tablet: { icon: Tablet, color: 'text-emerald-500 bg-emerald-50' },
+      wearable: { icon: Watch, color: 'text-purple-500 bg-purple-50' },
+      audio: { icon: Headphones, color: 'text-rose-500 bg-rose-50' },
+      accessory: { icon: Battery, color: 'text-amber-500 bg-amber-50' }
+    };
+
+    const uniqueCategories = [...new Set(products.map(p => p.category).filter(Boolean))].sort();
+
+    return uniqueCategories.map(cat => {
+      const lowerCat = cat.toLowerCase();
+      const style = categoryMap[lowerCat] || { icon: Smartphone, color: 'text-blue-500 bg-blue-50' };
+      
+      return {
+        id: cat,
+        name: cat.charAt(0).toUpperCase() + cat.slice(1),
+        ...style
+      };
+    });
+  }, [products]);
 
   const features = [
     { icon: Truck, title: 'Express Delivery', desc: 'Secure shipping on all premium orders.' },
