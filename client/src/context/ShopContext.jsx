@@ -60,6 +60,16 @@ export const ShopProvider = ({ children }) => {
         };
     });
 
+    const [homeCategoriesSelection, setHomeCategoriesSelection] = useState(() => {
+        const saved = localStorage.getItem('homeCategoriesSelection');
+        return saved ? JSON.parse(saved) : [];
+    });
+
+    const [featuredPopup, setFeaturedPopup] = useState(() => {
+        const saved = localStorage.getItem('featuredPopup');
+        return saved ? JSON.parse(saved) : { productId: null, showOnLoad: false };
+    });
+
     // Derived state
     const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
     const cartTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
@@ -72,6 +82,14 @@ export const ShopProvider = ({ children }) => {
     useEffect(() => {
         localStorage.setItem('dealPoster', JSON.stringify(dealPoster));
     }, [dealPoster]);
+
+    useEffect(() => {
+        localStorage.setItem('homeCategoriesSelection', JSON.stringify(homeCategoriesSelection));
+    }, [homeCategoriesSelection]);
+
+    useEffect(() => {
+        localStorage.setItem('featuredPopup', JSON.stringify(featuredPopup));
+    }, [featuredPopup]);
 
     // Admin Persistence
     useEffect(() => {
@@ -328,6 +346,8 @@ export const ShopProvider = ({ children }) => {
     };
 
     const updateDealPoster = (newPoster) => setDealPoster(newPoster);
+    const updateHomeCategoriesSelection = (cats) => setHomeCategoriesSelection(cats);
+    const updateFeaturedPopup = (config) => setFeaturedPopup(config);
 
     const getImageUrl = (path) => {
         if (!path) return '';
@@ -382,6 +402,8 @@ export const ShopProvider = ({ children }) => {
             cart,
             orders,
             dealPoster,
+            homeCategoriesSelection,
+            featuredPopup,
             cartCount,
             cartTotal,
             user,
@@ -410,6 +432,8 @@ export const ShopProvider = ({ children }) => {
             deleteProduct,
             uploadProductImages,
             updateDealPoster,
+            updateHomeCategoriesSelection,
+            updateFeaturedPopup,
             getImageUrl
         }}>
             {children}

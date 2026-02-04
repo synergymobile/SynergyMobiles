@@ -40,7 +40,11 @@ const AdminDashboard = () => {
     updateProduct,
     uploadProductImages,
     isLoading,
-    getImageUrl
+    getImageUrl,
+    homeCategoriesSelection,
+    updateHomeCategoriesSelection,
+    featuredPopup,
+    updateFeaturedPopup
   } = useShop();
   
   const navigate = useNavigate();
@@ -281,6 +285,7 @@ const AdminDashboard = () => {
           <ul className="flex flex-col gap-2">
             <NavItem id="products" icon={Package} label="All Products" badge={products.length} />
             <NavItem id="add-product" icon={PlusCircle} label={editingProduct ? "Edit Product" : "Add Product"} />
+            <NavItem id="homepage" icon={LayoutGrid} label="Homepage Setup" />
           </ul>
         </nav>
 
@@ -309,10 +314,10 @@ const AdminDashboard = () => {
               </button>
               <div>
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight capitalize bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  {activeTab === 'add-product' ? (editingProduct ? 'Edit Product' : 'New Product') : 'Inventory'}
+                  {activeTab === 'add-product' ? (editingProduct ? 'Edit Product' : 'New Product') : (activeTab === 'homepage' ? 'Homepage Setup' : 'Inventory')}
                 </h1>
                 <p className="text-slate-500 text-xs md:text-sm mt-1 font-medium hidden sm:block">
-                  {activeTab === 'products' ? 'Manage your product catalog, prices, and stock.' : 'Fill in the details below to update your catalog.'}
+                  {activeTab === 'products' ? 'Manage your product catalog, prices, and stock.' : (activeTab === 'homepage' ? 'Configure homepage categories and featured popup.' : 'Fill in the details below to update your catalog.')}
                 </p>
               </div>
             </div>
@@ -828,6 +833,95 @@ const AdminDashboard = () => {
                    </div>
                 </div>
               </form>
+            )}
+            {activeTab === 'homepage' && (
+              <div className="space-y-6">
+                <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
+                  <h3 className="text-lg font-black text-slate-800 mb-6 flex items-center gap-2">
+                    <LayoutGrid className="w-5 h-5 text-blue-600" /> Homepage Categories
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <CustomDropdown
+                        options={existingCategories.map(cat => ({ 
+                          value: cat, 
+                          label: cat.charAt(0).toUpperCase() + cat.slice(1) 
+                        }))}
+                        value={homeCategoriesSelection}
+                        onChange={(vals) => updateHomeCategoriesSelection(vals)}
+                        placeholder="Select up to 9 categories"
+                        multiple
+                        max={9}
+                      />
+                      <div className="text-xs font-bold text-slate-500 mt-2">
+                        {Array.isArray(homeCategoriesSelection) ? `${homeCategoriesSelection.length} / 9 selected` : '0 / 9 selected'}
+                      </div>
+                    </div>
+                    <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4">
+                      <div className="text-xs font-bold text-slate-500 mb-2">Preview</div>
+                      <div className="flex flex-wrap gap-2">
+                        {(Array.isArray(homeCategoriesSelection) ? homeCategoriesSelection : []).map(cat => (
+                          <span key={cat} className="px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold">
+                            {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                          </span>
+                        ))}
+                        {(Array.isArray(homeCategoriesSelection) && homeCategoriesSelection.length === 0) && (
+                          <span className="text-xs text-slate-400">No categories selected</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
+                  <h3 className="text-lg font-black text-slate-800 mb-6 flex items-center gap-2">
+                    <Play className="w-5 h-5 text-pink-600" /> Featured Popup
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <CustomDropdown
+                        options={products.map(p => ({ 
+                          value: p._id || p.id, 
+                          label: p.name 
+                        }))}
+                        value={featuredPopup?.productId || ''}
+                        onChange={(val) => updateFeaturedPopup({ productId: val, showOnLoad: !!featuredPopup?.showOnLoad })}
+                        placeholder="Select product to feature"
+                      />
+                      <label className="flex items-center gap-3 cursor-pointer group">
+                        <input 
+                          type="checkbox" 
+                          checked={!!featuredPopup?.showOnLoad}
+                          onChange={(e) => updateFeaturedPopup({ productId: featuredPopup?.productId || null, showOnLoad: e.target.checked })}
+                          className="w-4 h-4 rounded border border-slate-300"
+                        />
+                        <span className="text-sm font-bold text-slate-700">Show popup on site load</span>
+                      </label>
+                    </div>
+                    <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4">
+                      <div className="text-xs font-bold text-slate-500 mb-2">Preview</div>
+                      <div className="flex items-center gap-4">
+                        {featuredPopup?.productId ? (
+                          <>
+                            <div className="w-16 h-16 rounded-xl bg-white border border-slate-200 p-2">
+                              <img 
+                                src={getImageUrl((products.find(p => (p._id === featuredPopup.productId || p.id === featuredPopup.productId)))?.images?.[0] || (products.find(p => (p._id === featuredPopup.productId || p.id === featuredPopup.productId)))?.image)} 
+                                alt="" 
+                                className="w-full h-full object-contain mix-blend-multiply" 
+                              />
+                            </div>
+                            <div className="text-sm font-bold text-slate-700">
+                              {(products.find(p => (p._id === featuredPopup.productId || p.id === featuredPopup.productId)))?.name || 'Selected product'}
+                            </div>
+                          </>
+                        ) : (
+                          <span className="text-xs text-slate-400">No product selected</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         )}

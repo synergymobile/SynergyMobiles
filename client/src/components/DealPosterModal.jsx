@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { X, ArrowRight, Sparkles } from 'lucide-react';
 
 const DealPosterModal = () => {
-  const { dealPoster, getImageUrl } = useShop();
+  const { dealPoster, featuredPopup, products, getImageUrl } = useShop();
   const [isVisible, setIsVisible] = useState(false);
   const [isRendered, setIsRendered] = useState(false);
 
   useEffect(() => {
-    if (dealPoster?.showOnLoad) {
+    const shouldShowFeatured = featuredPopup?.showOnLoad && featuredPopup?.productId;
+    const shouldShowPoster = dealPoster?.showOnLoad;
+    if (shouldShowFeatured || shouldShowPoster) {
       const timer = setTimeout(() => {
         setIsRendered(true);
         setTimeout(() => setIsVisible(true), 50);
@@ -16,7 +19,7 @@ const DealPosterModal = () => {
       }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [dealPoster?.showOnLoad]);
+  }, [dealPoster?.showOnLoad, featuredPopup?.showOnLoad, featuredPopup?.productId]);
 
   const closePoster = () => {
     setIsVisible(false);
@@ -27,6 +30,11 @@ const DealPosterModal = () => {
   };
 
   if (!isRendered) return null;
+
+  const selectedProduct = products.find(p => (p._id && p._id === featuredPopup?.productId) || (p.id && p.id === featuredPopup?.productId));
+  const productImage = selectedProduct ? getImageUrl(selectedProduct.images?.[0] || selectedProduct.image) : null;
+  const productTitle = selectedProduct ? selectedProduct.name : null;
+  const productSlugOrId = selectedProduct ? (selectedProduct.slug || selectedProduct._id || selectedProduct.id) : null;
 
   return (
     <div className={`fixed inset-0 z-100 flex items-center justify-center p-8 sm:p-12 transition-all duration-1000 ease-in-out ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
@@ -47,12 +55,19 @@ const DealPosterModal = () => {
         </button>
         
         <div className="relative aspect-4/5 sm:aspect-3/4 group overflow-hidden">
-          {/* Main Cinematic Visual */}
-          <img 
-            src={getImageUrl(dealPoster.image)} 
-            alt="Elite Deal" 
-            className="w-full h-full object-cover transition-transform duration-8000 ease-out group-hover:scale-125" 
-          />
+          {selectedProduct ? (
+            <img 
+              src={productImage} 
+              alt={productTitle} 
+              className="w-full h-full object-cover transition-transform duration-8000 ease-out group-hover:scale-125" 
+            />
+          ) : (
+            <img 
+              src={getImageUrl(dealPoster.image)} 
+              alt="Elite Deal" 
+              className="w-full h-full object-cover transition-transform duration-8000 ease-out group-hover:scale-125" 
+            />
+          )}
           
           {/* Luxury Overlays: Radial Darkening & Brand Vignette */}
           <div className="absolute inset-0 bg-radial-at-t from-transparent via-slate-950/20 to-slate-950/90" />
@@ -70,23 +85,36 @@ const DealPosterModal = () => {
             </div>
 
             <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tighter leading-[0.95] mb-6 drop-shadow-2xl">
-                {dealPoster.title}
+                {selectedProduct ? productTitle : dealPoster.title}
             </h2>
             
             <p className="text-slate-300 text-sm sm:text-base font-medium leading-relaxed mb-10 max-w-[280px] drop-shadow-lg opacity-80">
-                {dealPoster.description}
+                {selectedProduct ? (selectedProduct.brand ? `Brand: ${selectedProduct.brand}` : '') : dealPoster.description}
             </p>
 
             <div className="flex flex-col w-full gap-3">
-              <button 
-                className="w-full py-5 bg-white text-slate-950 font-black rounded-full shadow-[0_15px_30px_-5px_rgba(255,255,255,0.3)] flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all duration-500 active:scale-95 group/btn overflow-hidden relative"
-                onClick={closePoster}
-              >
-                <span className="relative z-10 flex items-center gap-2">
-                    Experience Now
-                    <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
-                </span>
-              </button>
+              {selectedProduct ? (
+                <Link 
+                  to={`/product/${productSlugOrId}`}
+                  className="w-full py-5 bg-white text-slate-950 font-black rounded-full shadow-[0_15px_30px_-5px_rgba(255,255,255,0.3)] flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all duration-500 active:scale-95 group/btn overflow-hidden relative"
+                  onClick={closePoster}
+                >
+                  <span className="relative z-10 flex items-center gap-2">
+                      View Details
+                      <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
+                  </span>
+                </Link>
+              ) : (
+                <button 
+                  className="w-full py-5 bg-white text-slate-950 font-black rounded-full shadow-[0_15px_30px_-5px_rgba(255,255,255,0.3)] flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all duration-500 active:scale-95 group/btn overflow-hidden relative"
+                  onClick={closePoster}
+                >
+                  <span className="relative z-10 flex items-center gap-2">
+                      Experience Now
+                      <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
+                  </span>
+                </button>
+              )}
               
               <button 
                 className="py-4 text-white/40 hover:text-white font-bold text-[9px] uppercase tracking-[0.4em] transition-all duration-300 hover:tracking-[0.5em]"

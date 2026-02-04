@@ -7,14 +7,14 @@ import BrandMarquee from '../components/BrandMarquee';
 import { useShop } from '../context/ShopContext';
 
 const HomePage = () => {
-  const { products } = useShop();
+  const { products, homeCategoriesSelection } = useShop();
   
   // Filter products
   const featuredProducts = products.filter(p => p.isFeatured).slice(0, 8);
   const newArrivals = products.filter(p => p.isNewArrival).slice(0, 8);
   const bestSellers = products.filter(p => p.rating >= 4.7).slice(0, 8);
 
-  const categories = useMemo(() => {
+  const categories = (() => {
     const categoryMap = {
       smartphone: { icon: Smartphone, color: 'text-blue-500 bg-blue-50' },
       tablet: { icon: Tablet, color: 'text-emerald-500 bg-emerald-50' },
@@ -25,7 +25,7 @@ const HomePage = () => {
 
     const uniqueCategories = [...new Set(products.map(p => p.category).filter(Boolean))].sort();
 
-    return uniqueCategories.map(cat => {
+    const mapped = uniqueCategories.map(cat => {
       const lowerCat = cat.toLowerCase();
       const style = categoryMap[lowerCat] || { icon: Smartphone, color: 'text-blue-500 bg-blue-50' };
       
@@ -35,7 +35,12 @@ const HomePage = () => {
         ...style
       };
     });
-  }, [products]);
+    if (Array.isArray(homeCategoriesSelection) && homeCategoriesSelection.length > 0) {
+      const set = new Set(homeCategoriesSelection);
+      return mapped.filter(c => set.has(c.id));
+    }
+    return mapped;
+  })();
 
   const features = [
     { icon: Truck, title: 'Express Delivery', desc: 'Secure shipping on all premium orders.' },

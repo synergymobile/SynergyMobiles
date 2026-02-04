@@ -4,7 +4,7 @@ import { useShop } from '../context/ShopContext';
 import { ChevronRight, List, Smartphone, Tablet, Watch, Headphones, Battery, ShieldCheck, Truck, Clock } from 'lucide-react';
 
 const Hero = () => {
-    const { getImageUrl } = useShop();
+    const { getImageUrl, homeCategoriesSelection } = useShop();
     const [activeSlide, setActiveSlide] = useState(0);
     const slides = [
         {
@@ -51,17 +51,34 @@ const Hero = () => {
         return () => clearInterval(interval);
     }, [slides.length]);
 
-    const categories = [
+    // Helper to get icon based on category name
+    const getCategoryIcon = (name) => {
+        const lower = name.toLowerCase();
+        if (lower.includes('phone') || lower.includes('iphone') || lower.includes('mobile')) return <Smartphone className="w-4 h-4" />;
+        if (lower.includes('tablet') || lower.includes('ipad')) return <Tablet className="w-4 h-4" />;
+        if (lower.includes('watch') || lower.includes('wearable')) return <Watch className="w-4 h-4" />;
+        if (lower.includes('audio') || lower.includes('headphone') || lower.includes('earbud') || lower.includes('sound')) return <Headphones className="w-4 h-4" />;
+        if (lower.includes('battery') || lower.includes('power') || lower.includes('charge')) return <Battery className="w-4 h-4" />;
+        if (lower.includes('game') || lower.includes('gaming')) return <Smartphone className="w-4 h-4" />; // Or add Gamepad icon if available
+        return <Smartphone className="w-4 h-4" />; // Default fallback
+    };
+
+    // Default categories if none selected (fallback to keep UI populated initially)
+    const defaultCategories = [
         { name: 'Smartphones', link: '/products?category=smartphone', icon: <Smartphone className="w-4 h-4" /> },
-        { name: 'Apple iPhone', link: '/products?brand=apple', icon: <Smartphone className="w-4 h-4" /> },
-        { name: 'Samsung', link: '/products?brand=samsung', icon: <Smartphone className="w-4 h-4" /> },
-        { name: 'Xiaomi', link: '/products?brand=xiaomi', icon: <Smartphone className="w-4 h-4" /> },
         { name: 'Tablets', link: '/products?category=tablet', icon: <Tablet className="w-4 h-4" /> },
         { name: 'Wearables', link: '/products?category=wearable', icon: <Watch className="w-4 h-4" /> },
-        { name: 'Mobile Accessories', link: '/products?category=accessory', icon: <Headphones className="w-4 h-4" /> },
-        { name: 'Power Banks', link: '/products?category=powerbank', icon: <Battery className="w-4 h-4" /> },
-        { name: 'Audio Devices', link: '/products?category=audio', icon: <Headphones className="w-4 h-4" /> }
+        { name: 'Audio', link: '/products?category=audio', icon: <Headphones className="w-4 h-4" /> },
+        { name: 'Accessories', link: '/products?category=accessory', icon: <Battery className="w-4 h-4" /> }
     ];
+
+    const categories = (homeCategoriesSelection && homeCategoriesSelection.length > 0)
+        ? homeCategoriesSelection.map(cat => ({
+            name: cat.charAt(0).toUpperCase() + cat.slice(1),
+            link: `/products?category=${cat}`,
+            icon: getCategoryIcon(cat)
+        }))
+        : defaultCategories;
 
     return (
         <section className="py-6 bg-gray-50">

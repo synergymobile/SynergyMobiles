@@ -7,7 +7,9 @@ const CustomDropdown = ({
   onChange, 
   placeholder = "Select option", 
   icon: Icon,
-  className = ""
+  className = "",
+  multiple = false,
+  max
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -22,7 +24,8 @@ const CustomDropdown = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const selectedOption = options.find(opt => opt.value === value);
+  const selectedOption = multiple ? null : options.find(opt => opt.value === value);
+  const selectedCount = multiple && Array.isArray(value) ? value.length : 0;
 
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
@@ -33,9 +36,15 @@ const CustomDropdown = ({
       >
         <div className="flex items-center gap-2">
           {Icon && <Icon className="w-4 h-4 text-slate-400" />}
-          <span className={!selectedOption ? 'text-slate-400' : ''}>
-            {selectedOption ? selectedOption.label : placeholder}
-          </span>
+          {multiple ? (
+            <span className={`${selectedCount === 0 ? 'text-slate-400' : ''}`}>
+              {selectedCount === 0 ? placeholder : `${selectedCount} selected${max ? ` / ${max}` : ''}`}
+            </span>
+          ) : (
+            <span className={!selectedOption ? 'text-slate-400' : ''}>
+              {selectedOption ? selectedOption.label : placeholder}
+            </span>
+          )}
         </div>
         <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
@@ -48,17 +57,32 @@ const CustomDropdown = ({
                 key={option.value}
                 type="button"
                 onClick={() => {
-                  onChange(option.value);
-                  setIsOpen(false);
+                  if (multiple) {
+                    const current = Array.isArray(value) ? value : [];
+                    const exists = current.includes(option.value);
+                    let next;
+                    if (exists) {
+                      next = current.filter(v => v !== option.value);
+                    } else {
+                      if (max && current.length >= max) {
+                        return;
+                      }
+                      next = [...current, option.value];
+                    }
+                    onChange(next);
+                  } else {
+                    onChange(option.value);
+                    setIsOpen(false);
+                  }
                 }}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-bold transition-colors ${
-                  value === option.value 
-                    ? 'bg-blue-50 text-blue-600' 
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  multiple
+                    ? (Array.isArray(value) && value.includes(option.value) ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900')
+                    : (value === option.value ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900')
                 }`}
               >
                 <span>{option.label}</span>
-                {value === option.value && <Check className="w-4 h-4" />}
+                {(multiple ? (Array.isArray(value) && value.includes(option.value)) : (value === option.value)) && <Check className="w-4 h-4" />}
               </button>
             ))}
           </div>
