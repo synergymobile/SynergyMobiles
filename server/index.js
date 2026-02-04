@@ -98,8 +98,6 @@ apiRouter.use('/orders', orderRoutes);
 
 // Mount the API router
 app.use('/api', apiRouter);
-// Also mount at root as a fallback for certain hosting environments
-app.use('/', apiRouter);
 
 // Make uploads folder static
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
