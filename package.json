@@ -11,8 +11,8 @@
     "dev": "start cmd /k npm start && start cmd /k npm run client"
   },
   "dependencies": {
-    "express": "^5.2.1",
-    "mongoose": "^9.1.5",
-    "dotenv": "^17.2.3"
+    "express": "^4.21.2",
+    "mongoose": "^8.10.0",
+    "dotenv": "^16.4.7"
   }
 }

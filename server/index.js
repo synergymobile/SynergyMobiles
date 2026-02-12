@@ -143,16 +143,28 @@ app.get('*', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     log(`Server running on port ${PORT}`);
+});
+
+server.on('error', (err) => {
+    log(`Server Error: ${err.message}`);
+    if (err.code === 'EADDRINUSE') {
+        log('Port is already in use. This might be a temporary deployment issue.');
+    }
 });
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
-    console.error(`Error: ${err.message}`);
+    log(`Unhandled Rejection: ${err.message}`);
+    if (err.stack) log(err.stack);
 });
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
-    console.error(`Uncaught Exception: ${err.message}`);
+    log(`Uncaught Exception: ${err.message}`);
+    if (err.stack) log(err.stack);
+    // On some environments, we might want to exit, but on Hostinger 
+    // we try to stay alive if possible to show logs
+    // process.exit(1); 
 });

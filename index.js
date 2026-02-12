@@ -16,10 +16,21 @@ function log(msg) {
 
 log('Starting root index.js...');
 log(`Current Directory: ${process.cwd()}`);
+log(`Node Version: ${process.version}`);
+
+process.on('uncaughtException', (err) => {
+    log(`CRITICAL: Uncaught Exception: ${err.message}`);
+    log(`Stack: ${err.stack}`);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    log(`CRITICAL: Unhandled Rejection at: ${promise}, reason: ${reason}`);
+});
 
 try {
     log('Attempting to require ./server/index.js');
-    const server = require('./server/index.js');
+    require('./server/index.js');
     log('Successfully required ./server/index.js');
 } catch (error) {
     log(`FATAL ERROR: Failed to require ./server/index.js: ${error.message}`);
