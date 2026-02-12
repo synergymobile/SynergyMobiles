@@ -38,7 +38,10 @@ const app = express();
 
 
 // Middlewares
-app.use(helmet());
+app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+}));
 app.use(cors());
 app.use(express.json());
 
@@ -67,7 +70,7 @@ app.get('/health-db', (req, res) => {
 
 // Log all requests for debugging
 app.use((req, res, next) => {
-    console.log(`${req.method} ${req.path}`);
+    log(`${req.method} ${req.path}${req.url.includes('?') ? '?' + req.url.split('?')[1] : ''}`);
     next();
 });
 
@@ -120,18 +123,20 @@ app.get('/debug-logs', (req, res) => {
 });
 
 // Wildcard route to serve index.html for SPA
-app.get(/.*/, (req, res) => {
+app.get('*', (req, res) => {
     // If request is not for /api, serve the frontend
     if (!req.path.startsWith('/api')) {
         const indexPath = path.join(distPath, 'index.html');
+        log(`SPA Routing: ${req.path} -> serving ${indexPath}`);
         if (fs.existsSync(indexPath)) {
             res.sendFile(indexPath);
         } else {
-            const msg = 'Frontend build not found. Please build the client and ensure dist/index.html exists.';
+            const msg = `Frontend build not found at ${indexPath}. Please build the client and ensure dist/index.html exists.`;
             log(msg);
             res.status(404).send(msg);
         }
     } else {
+        log(`API 404: ${req.path}`);
         res.status(404).json({ message: 'API Route Not Found' });
     }
 });
