@@ -4,9 +4,10 @@ import { useShop } from '../context/ShopContext';
 import { ChevronRight, List, Smartphone, Tablet, Watch, Headphones, Battery, ShieldCheck, Truck, Clock } from 'lucide-react';
 
 const Hero = () => {
-    const { getImageUrl, homeCategoriesSelection } = useShop();
+    const { getImageUrl, homeCategoriesSelection, heroBannersSelection, products } = useShop();
     const [activeSlide, setActiveSlide] = useState(0);
-    const slides = [
+
+    const defaultSlides = [
         {
             image: 'https://images.unsplash.com/photo-1696446701796-da61225697cc?q=80&w=1920&auto=format&fit=crop',
             title: 'iPhone 15 Pro Max<br>Titanium Blue',
@@ -43,6 +44,22 @@ const Hero = () => {
             link: '/products?category=tablet'
         }
     ];
+
+    const dynamicSlides = (heroBannersSelection && heroBannersSelection.length > 0)
+        ? heroBannersSelection.map(prodId => {
+            const prod = products.find(p => (p._id === prodId || p.id === prodId));
+            if (!prod) return null;
+            return {
+                 image: prod.images?.[0] || prod.image,
+                 title: prod.name,
+                 desc: prod.description.length > 120 ? prod.description.substring(0, 120) + '...' : prod.description,
+                 btnText: 'View Details',
+                 link: `/product/${prod.slug || prod._id || prod.id}`
+             };
+        }).filter(Boolean)
+        : defaultSlides;
+
+    const slides = dynamicSlides;
 
     useEffect(() => {
         const interval = setInterval(() => {

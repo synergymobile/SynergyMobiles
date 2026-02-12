@@ -45,6 +45,8 @@ const AdminDashboard = () => {
     updateHomeCategoriesSelection,
     headerCategoriesSelection,
     updateHeaderCategoriesSelection,
+    heroBannersSelection,
+    updateHeroBannersSelection,
     featuredPopup,
     updateFeaturedPopup
   } = useShop();
@@ -838,6 +840,51 @@ const AdminDashboard = () => {
             )}
             {activeTab === 'homepage' && (
               <div className="space-y-6">
+                <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
+                  <h3 className="text-lg font-black text-slate-800 mb-6 flex items-center gap-2">
+                    <ImageIcon className="w-5 h-5 text-purple-600" /> Hero Banner Products
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <CustomDropdown
+                        options={products.map(p => ({ 
+                          value: p._id || p.id, 
+                          label: p.name 
+                        }))}
+                        value={heroBannersSelection || []}
+                        onChange={(vals) => updateHeroBannersSelection(vals)}
+                        placeholder="Select up to 5 products for hero banner"
+                        multiple
+                        max={5}
+                      />
+                      <div className="text-xs font-bold text-slate-500 mt-2">
+                        {Array.isArray(heroBannersSelection) ? `${heroBannersSelection.length} / 5 selected` : '0 / 5 selected'}
+                      </div>
+                    </div>
+                    <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4">
+                      <div className="text-xs font-bold text-slate-500 mb-2">Preview</div>
+                      <div className="flex flex-wrap gap-3">
+                        {(Array.isArray(heroBannersSelection) ? heroBannersSelection : []).map(prodId => {
+                          const prod = products.find(p => (p._id === prodId || p.id === prodId));
+                          return prod ? (
+                            <div key={prodId} className="group relative w-12 h-12 bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
+                              <img 
+                                src={getImageUrl(prod.images?.[0] || prod.image)} 
+                                alt={prod.name} 
+                                className="w-full h-full object-contain mix-blend-multiply" 
+                                title={prod.name}
+                              />
+                            </div>
+                          ) : null;
+                        })}
+                        {(Array.isArray(heroBannersSelection) && heroBannersSelection.length === 0) && (
+                          <span className="text-xs text-slate-400">No products selected</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
                   <h3 className="text-lg font-black text-slate-800 mb-6 flex items-center gap-2">
                     <LayoutGrid className="w-5 h-5 text-blue-600" /> Homepage Categories

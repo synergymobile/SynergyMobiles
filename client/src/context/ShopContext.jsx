@@ -70,6 +70,11 @@ export const ShopProvider = ({ children }) => {
         return saved ? JSON.parse(saved) : [];
     });
 
+    const [heroBannersSelection, setHeroBannersSelection] = useState(() => {
+        const saved = localStorage.getItem('heroBannersSelection');
+        return saved ? JSON.parse(saved) : [];
+    });
+
     const [featuredPopup, setFeaturedPopup] = useState(() => {
         const saved = localStorage.getItem('featuredPopup');
         return saved ? JSON.parse(saved) : { productId: null, showOnLoad: false };
@@ -95,6 +100,10 @@ export const ShopProvider = ({ children }) => {
     useEffect(() => {
         localStorage.setItem('headerCategoriesSelection', JSON.stringify(headerCategoriesSelection));
     }, [headerCategoriesSelection]);
+
+    useEffect(() => {
+        localStorage.setItem('heroBannersSelection', JSON.stringify(heroBannersSelection));
+    }, [heroBannersSelection]);
 
     useEffect(() => {
         localStorage.setItem('featuredPopup', JSON.stringify(featuredPopup));
@@ -357,6 +366,7 @@ export const ShopProvider = ({ children }) => {
     const updateDealPoster = (newPoster) => setDealPoster(newPoster);
     const updateHomeCategoriesSelection = (cats) => setHomeCategoriesSelection(cats);
     const updateHeaderCategoriesSelection = (cats) => setHeaderCategoriesSelection(cats);
+    const updateHeroBannersSelection = (products) => setHeroBannersSelection(products);
     const updateFeaturedPopup = (config) => setFeaturedPopup(config);
 
     const getImageUrl = (path) => {
@@ -413,6 +423,8 @@ export const ShopProvider = ({ children }) => {
             orders,
             dealPoster,
             homeCategoriesSelection,
+            headerCategoriesSelection,
+            heroBannersSelection,
             featuredPopup,
             cartCount,
             cartTotal,
@@ -444,6 +456,7 @@ export const ShopProvider = ({ children }) => {
             updateDealPoster,
             updateHomeCategoriesSelection,
             updateHeaderCategoriesSelection,
+            updateHeroBannersSelection,
             updateFeaturedPopup,
             getImageUrl
         }}>
