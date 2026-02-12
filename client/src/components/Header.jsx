@@ -6,7 +6,26 @@ import Logo from './Logo';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { cartCount, toggleCart, isUserLoggedIn, user, isAdmin } = useShop();
+  const { cartCount, toggleCart, isUserLoggedIn, user, isAdmin, headerCategoriesSelection } = useShop();
+
+  const defaultHeaderCategories = [
+    { label: 'Mobiles', path: '/products?category=smartphone' },
+    { label: 'Accessories', path: '/products?category=accessory' },
+    { label: 'Tablets', path: '/products?category=tablet' }
+  ];
+
+  const dynamicHeaderCategories = (headerCategoriesSelection && headerCategoriesSelection.length > 0)
+    ? headerCategoriesSelection.map(cat => ({
+        label: cat.charAt(0).toUpperCase() + cat.slice(1),
+        path: `/products?category=${cat}`
+      }))
+    : defaultHeaderCategories;
+
+  const navLinks = [
+    ...dynamicHeaderCategories,
+    { label: 'About', path: '/about' },
+    { label: 'Contact', path: '/contact' }
+  ];
 
   return (
     <header className="bg-white/90 backdrop-blur-xl border-b border-slate-100 shadow-sm sticky top-0 z-50 transition-all duration-300">
@@ -28,13 +47,7 @@ const Header = () => {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-10">
-            {[
-              { label: 'Home', path: '/' },
-              { label: 'Mobiles', path: '/products?category=smartphone' },
-              { label: 'Accessories', path: '/products?category=accessory' },
-              { label: 'About', path: '/about' },
-              { label: 'Contact', path: '/contact' }
-            ].map((link) => (
+            {navLinks.map((link) => (
               <Link 
                 key={link.label}
                 to={link.path} 
@@ -120,14 +133,7 @@ const Header = () => {
             <div className="space-y-6">
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-4 px-1">Navigation</p>
               <nav className="flex flex-col">
-                {[
-                  { label: 'Home', path: '/' },
-                  { label: 'Smartphones', path: '/products?category=smartphone' },
-                  { label: 'Featured Accessories', path: '/products?category=accessory' },
-                  { label: 'Elite Tablets', path: '/products?category=tablet' },
-                  { label: 'About Synergy', path: '/about' },
-                  { label: 'Contact Support', path: '/contact' },
-                ].map((link) => (
+                {navLinks.map((link) => (
                   <Link 
                     key={link.label}
                     to={link.path} 

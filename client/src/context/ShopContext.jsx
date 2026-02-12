@@ -65,6 +65,11 @@ export const ShopProvider = ({ children }) => {
         return saved ? JSON.parse(saved) : [];
     });
 
+    const [headerCategoriesSelection, setHeaderCategoriesSelection] = useState(() => {
+        const saved = localStorage.getItem('headerCategoriesSelection');
+        return saved ? JSON.parse(saved) : [];
+    });
+
     const [featuredPopup, setFeaturedPopup] = useState(() => {
         const saved = localStorage.getItem('featuredPopup');
         return saved ? JSON.parse(saved) : { productId: null, showOnLoad: false };
@@ -86,6 +91,10 @@ export const ShopProvider = ({ children }) => {
     useEffect(() => {
         localStorage.setItem('homeCategoriesSelection', JSON.stringify(homeCategoriesSelection));
     }, [homeCategoriesSelection]);
+
+    useEffect(() => {
+        localStorage.setItem('headerCategoriesSelection', JSON.stringify(headerCategoriesSelection));
+    }, [headerCategoriesSelection]);
 
     useEffect(() => {
         localStorage.setItem('featuredPopup', JSON.stringify(featuredPopup));
@@ -347,6 +356,7 @@ export const ShopProvider = ({ children }) => {
 
     const updateDealPoster = (newPoster) => setDealPoster(newPoster);
     const updateHomeCategoriesSelection = (cats) => setHomeCategoriesSelection(cats);
+    const updateHeaderCategoriesSelection = (cats) => setHeaderCategoriesSelection(cats);
     const updateFeaturedPopup = (config) => setFeaturedPopup(config);
 
     const getImageUrl = (path) => {
@@ -433,6 +443,7 @@ export const ShopProvider = ({ children }) => {
             uploadProductImages,
             updateDealPoster,
             updateHomeCategoriesSelection,
+            updateHeaderCategoriesSelection,
             updateFeaturedPopup,
             getImageUrl
         }}>

@@ -43,6 +43,8 @@ const AdminDashboard = () => {
     getImageUrl,
     homeCategoriesSelection,
     updateHomeCategoriesSelection,
+    headerCategoriesSelection,
+    updateHeaderCategoriesSelection,
     featuredPopup,
     updateFeaturedPopup
   } = useShop();
@@ -866,6 +868,43 @@ const AdminDashboard = () => {
                           </span>
                         ))}
                         {(Array.isArray(homeCategoriesSelection) && homeCategoriesSelection.length === 0) && (
+                          <span className="text-xs text-slate-400">No categories selected</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
+                  <h3 className="text-lg font-black text-slate-800 mb-6 flex items-center gap-2">
+                    <Menu className="w-5 h-5 text-indigo-600" /> Header Categories
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <CustomDropdown
+                        options={existingCategories.map(cat => ({ 
+                          value: cat, 
+                          label: cat.charAt(0).toUpperCase() + cat.slice(1) 
+                        }))}
+                        value={headerCategoriesSelection}
+                        onChange={(vals) => updateHeaderCategoriesSelection(vals)}
+                        placeholder="Select exactly 3 categories"
+                        multiple
+                        max={3}
+                      />
+                      <div className="text-xs font-bold text-slate-500 mt-2">
+                        {Array.isArray(headerCategoriesSelection) ? `${headerCategoriesSelection.length} / 3 selected` : '0 / 3 selected'}
+                      </div>
+                    </div>
+                    <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4">
+                      <div className="text-xs font-bold text-slate-500 mb-2">Preview</div>
+                      <div className="flex flex-wrap gap-2">
+                        {(Array.isArray(headerCategoriesSelection) ? headerCategoriesSelection : []).map(cat => (
+                          <span key={cat} className="px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold">
+                            {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                          </span>
+                        ))}
+                        {(Array.isArray(headerCategoriesSelection) && headerCategoriesSelection.length === 0) && (
                           <span className="text-xs text-slate-400">No categories selected</span>
                         )}
                       </div>
